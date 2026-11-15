@@ -1,0 +1,54 @@
+CHEQUE WRITER v27.3 UPDATE  (for the accounts computer)
+========================================================
+
+WHAT THIS DOES
+  - Bank list shows only RAK: "RAK (Biz)", "Rak Bank Amal",
+    "Rak Bank (Personal)". Use "RAK (Biz)" for company cheques.
+  - Decimals (fils) keep working.
+  - Print button arrow > "Preview Cheque": see the cheque on screen first.
+    ("Print Envelope" is removed.)
+  - Options > Font: text Size (-2 to +3), Bold text, and
+    "Fine-tune position (mm)" for Date, Payee, Amount, Amount in words.
+  - Before every print a box shows Date / Payee / Amount and asks
+    "Print this cheque now?" - click No to correct a mistake.
+  - Options > General: "Test print" - prints the cheque picture too,
+    for checking on plain A4 paper. A warning appears if you print
+    with it ticked.
+  - The program no longer checks for updates (protects this computer
+    from being upgraded to version 36.8).
+  - Your saved data is NOT changed. A backup is made on the Desktop first.
+
+FILES IN THIS FOLDER
+  CSCheckWriter.exe   - the updated program (v27.3)
+  INSTALL.bat         - installs it (with automatic backup)
+  UNDO.bat            - puts the original program back
+  READ ME FIRST.txt   - this file
+
+HOW TO INSTALL
+  1. Close Cheque Writer.
+  2. Right-click the ZIP file -> "Extract All..." -> Extract.
+     (Do NOT run it from inside the ZIP.)
+  3. Open the extracted folder and double-click INSTALL.bat.
+     If Windows shows "Windows protected your PC", click
+     "More info" -> "Run anyway".
+  4. When Windows asks "Do you want to allow this app to make changes?",
+     click YES.
+  5. Wait for "[DONE] Cheque Writer v27.3 installed." and press any key.
+
+AFTER INSTALLING - CHECK THIS FIRST
+  1. Open Cheque Writer -> Tools -> Options -> General.
+     "Test print" must be UNTICKED before printing real cheques.
+  2. Choose "RAK (Biz)" in the bank list.
+  3. Enter a payee and an amount such as 1250.50.
+  4. Print button arrow -> "Preview Cheque" to check it on screen.
+  5. Print on PLAIN paper first and hold it over a real RAK Business
+     cheque to check the position.
+
+IF SOMETHING IS WRONG
+  Close Cheque Writer and double-click UNDO.bat. The original program
+  comes back. Your data backup is on the Desktop in a folder named
+  ChequeWriter_Backup_<date>.
+
+IMPORTANT
+  Never install Cheque Writer version 36.8 (or newer) on this computer.
+  It upgrades the data file and version 27 can no longer open it.
