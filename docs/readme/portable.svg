@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="100" viewBox="0 0 380 100" role="img" aria-label="Portable ZIP: No install  ·  runs from a USB stick">
+<title>Portable ZIP: No install  ·  runs from a USB stick</title>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1d9a3"/><stop offset="1" stop-color="#c4994e"/></linearGradient>
+  <linearGradient id="sh" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <clipPath id="c"><rect x="12" y="12" width="356" height="76" rx="38.0"/></clipPath>
+  <filter id="b" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="8"/></filter>
+</defs>
+<style>
+  .glow{animation:glow 2.6s ease-in-out infinite} @keyframes glow{0%,100%{opacity:.25}50%{opacity:.8}}
+  .sh{animation:sh 3.4s ease-in-out infinite} @keyframes sh{0%{transform:translateX(-180px)}55%,100%{transform:translateX(460px)}}
+  .bob{animation:bob 1.8s ease-in-out infinite} @keyframes bob{0%,100%{transform:translate(60px,50px)}50%{transform:translate(60px,54px)}}
+</style>
+<rect class="glow" x="18" y="20" width="344" height="60" rx="30.0" fill="#d4af6a" filter="url(#b)"/>
+<rect x="12" y="12" width="356" height="76" rx="38.0" fill="#0e131d" stroke="#d4af6a" stroke-width="1.5"/>
+<g clip-path="url(#c)"><g class="sh"><rect x="0" y="-10" width="110" height="120" fill="url(#sh)" transform="skewX(-22)"/></g></g>
+<circle cx="60" cy="50" r="25" fill="rgba(212,175,106,.14)"/>
+<g class="bob" stroke="#d4af6a"><path d="M-9 -13 H5 L10 -8 V13 H-9 Z M-2 -13 V1 M-2 -9 h3 M-2 -5 h-3 M-2 -1 h3" fill="none" stroke-width="2.2" stroke-linejoin="round"/></g>
+<text x="98" y="48" font-family="'Segoe UI','Inter','Helvetica Neue',Arial,sans-serif" font-size="25" font-weight="800" fill="#d4af6a">Portable ZIP</text>
+<text x="99" y="72" font-family="'Segoe UI','Inter','Helvetica Neue',Arial,sans-serif" font-size="14" fill="rgba(232,235,241,.7)">No install  ·  runs from a USB stick</text>
+</svg>

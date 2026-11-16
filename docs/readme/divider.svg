@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="28" viewBox="0 0 1280 28" role="presentation">
+<defs>
+  <linearGradient id="l" x1="0" x2="1"><stop offset="0" stop-color="#d4af6a" stop-opacity="0"/><stop offset=".5" stop-color="#d4af6a" stop-opacity=".55"/><stop offset="1" stop-color="#d4af6a" stop-opacity="0"/></linearGradient>
+  <linearGradient id="s" x1="0" x2="1"><stop offset="0" stop-color="#f6e3b4" stop-opacity="0"/><stop offset=".5" stop-color="#f6e3b4"/><stop offset="1" stop-color="#f6e3b4" stop-opacity="0"/></linearGradient>
+  <filter id="b"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<style>.run{animation:run 3.6s ease-in-out infinite} @keyframes run{0%{transform:translateX(-240px)}100%{transform:translateX(1280px)}}
+.spin{transform-origin:640px 14px;animation:spin 6s linear infinite} @keyframes spin{to{transform:rotate(360deg)}}</style>
+<rect x="0" y="13" width="1280" height="1.5" fill="url(#l)"/>
+<g class="run"><rect x="0" y="11" width="240" height="6" fill="url(#s)" filter="url(#b)"/></g>
+<rect class="spin" x="634" y="8" width="12" height="12" fill="#0e131d" stroke="#d4af6a" stroke-width="1.5" transform="rotate(45 640 14)"/>
+</svg>

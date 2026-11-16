@@ -33,11 +33,22 @@ jobs:
         shell: cmd
         run: publish.bat
 
-      - name: Draft release
+      # Same files under fixed names, so this link always gives the newest version:
+      # https://github.com/KarthickRaja46/RakSpecial/releases/latest/download/RAKSpecial-Setup.exe
+      - name: Fixed-name copies for direct download links
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          Copy-Item (Get-Item Share/RAKSpecial-Setup-*.exe).FullName Share/RAKSpecial-Setup.exe
+          Copy-Item (Get-Item Share/RAKSpecial-Portable-*.zip).FullName Share/RAKSpecial-Portable.zip
+
+      - name: Publish release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          draft: true
+          generate_release_notes: true
           files: |
+            Share/RAKSpecial-Setup.exe
+            Share/RAKSpecial-Portable.zip
             Share/RAKSpecial-Setup-*.exe
             Share/RAKSpecial-Portable-*.zip

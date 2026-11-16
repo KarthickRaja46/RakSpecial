@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="100" viewBox="0 0 540 100" role="img" aria-label="Download for Windows: RAKSpecial-Setup.exe  ·  Free  ·  Windows 10 / 11">
+<title>Download for Windows: RAKSpecial-Setup.exe  ·  Free  ·  Windows 10 / 11</title>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1d9a3"/><stop offset="1" stop-color="#c4994e"/></linearGradient>
+  <linearGradient id="sh" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <clipPath id="c"><rect x="12" y="12" width="516" height="76" rx="38.0"/></clipPath>
+  <filter id="b" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="8"/></filter>
+</defs>
+<style>
+  .glow{animation:glow 2.6s ease-in-out infinite} @keyframes glow{0%,100%{opacity:.25}50%{opacity:.8}}
+  .sh{animation:sh 3.4s ease-in-out infinite} @keyframes sh{0%{transform:translateX(-180px)}55%,100%{transform:translateX(620px)}}
+  .bob{animation:bob 1.8s ease-in-out infinite} @keyframes bob{0%,100%{transform:translate(60px,50px)}50%{transform:translate(60px,54px)}}
+</style>
+<rect class="glow" x="18" y="20" width="504" height="60" rx="30.0" fill="#d4af6a" filter="url(#b)"/>
+<rect x="12" y="12" width="516" height="76" rx="38.0" fill="url(#g)" stroke="none" stroke-width="1.5"/>
+<g clip-path="url(#c)"><g class="sh"><rect x="0" y="-10" width="110" height="120" fill="url(#sh)" transform="skewX(-22)"/></g></g>
+<circle cx="60" cy="50" r="25" fill="#0b0d12"/>
+<g class="bob" stroke="#d4af6a"><path d="M0 -13 V7 M-8 -1 L0 7 L8 -1 M-11 13 H11" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="98" y="48" font-family="'Segoe UI','Inter','Helvetica Neue',Arial,sans-serif" font-size="25" font-weight="800" fill="#0b0d12">Download for Windows</text>
+<text x="99" y="72" font-family="'Segoe UI','Inter','Helvetica Neue',Arial,sans-serif" font-size="14" fill="rgba(11,13,18,.72)">RAKSpecial-Setup.exe  ·  Free  ·  Windows 10 / 11</text>
+</svg>

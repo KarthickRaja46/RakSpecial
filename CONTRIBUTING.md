@@ -50,6 +50,7 @@ While you work, use a portable data folder so your real cheque register is not t
    name the repository, e.g. `owner/rak-special`.
 2. Commit, then tag and push: `git tag v2.1.0 && git push --tags`.
 3. GitHub Actions runs the tests, builds `RAKSpecial-Setup-2.1.0.exe` and `RAKSpecial-Portable-2.1.0.zip`, and
-   attaches them to a draft release. Check the draft, then publish it.
+   publishes them as a release, together with fixed-name copies (`RAKSpecial-Setup.exe`, `RAKSpecial-Portable.zip`)
+   that the README's download buttons link to. Edit the release notes on GitHub if needed.
 
 To build locally instead, run `publish.bat`; the files appear in `Share\`.
