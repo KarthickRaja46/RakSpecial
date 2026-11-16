@@ -104,6 +104,15 @@ public class BankLayout
     [Category("Page"), DisplayName("Cheque height (mm)")]
     public double ChequeHeightMm { get; set; } = 94;
 
+    [Category("Page"), DisplayName("Cheque left edge on page (mm)"),
+     Description("Where the cheque sits on the page when you feed it: distance from the paper's left edge. " +
+                 "10 mm is the same as Chrysanth Cheque Writer.")]
+    public double ChequeLeftMm { get; set; } = 10;
+
+    [Category("Page"), DisplayName("Cheque top edge on page (mm)"),
+     Description("Distance from the paper's top edge to the top of the cheque. 10 mm is the same as Chrysanth Cheque Writer.")]
+    public double ChequeTopMm { get; set; } = 10;
+
     [Category("Printer adjustment"), DisplayName("Offset X (mm)"), Description("Moves everything right (+) or left (-). Use this to match your printer.")]
     public double OffsetXmm { get; set; }
 

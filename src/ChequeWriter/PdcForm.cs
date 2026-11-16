@@ -180,15 +180,8 @@ public class PdcForm : Form
                 $"Cheque book: {_bank.Name} {_bank.Code}\n\nThe program will ask you to put in each cheque before it prints. Start?",
                 "Print PDC series", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK) return;
 
-        // choose the printer once for the whole series
-        PrinterSettings? printer;
-        using (var first = ChequePrinter.Create(_bank, DataFor(_items[0]), _store.Data.Settings, testPrint: false))
-        using (var dlg = new PrintDialog { Document = first, UseEXDialog = true, AllowSomePages = false, AllowSelection = false })
-        {
-            if (dlg.ShowDialog(this) != DialogResult.OK) return;
-            printer = first.PrinterSettings;
-            _bank.PrinterName = printer.PrinterName;
-        }
+        // the cheque book's printer (chosen in the main window)
+        if (!Printers.Ready(this, Printers.For(_bank), realCheque: true)) return;
 
         var done = 0;
         foreach (var it in _items)
@@ -200,7 +193,6 @@ public class PdcForm : Form
                     "Next cheque", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK) break;
 
             using var doc = ChequePrinter.Create(_bank, data, _store.Data.Settings, testPrint: false);
-            doc.PrinterSettings.PrinterName = printer.PrinterName;
             try { doc.Print(); }
             catch (Exception ex)
             {

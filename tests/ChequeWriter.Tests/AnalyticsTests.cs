@@ -130,6 +130,39 @@ public class AnalyticsTests
     }
 }
 
+public class ChequePositionTests
+{
+    [Fact]
+    public void Built_in_books_sit_10mm_in_like_Chrysanth()
+    {
+        foreach (var b in DefaultLayouts.All())
+            Assert.Equal((10.0, 10.0), (b.ChequeLeftMm, b.ChequeTopMm));
+    }
+
+    [Fact]
+    public void Older_saved_data_gets_the_10mm_position()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"rs-pos-{Guid.NewGuid():N}.json");
+        try
+        {
+            var store = new DataStore(path);
+            store.Save();
+            // remove the new settings, as in a file saved by version 2.1.2 or earlier
+            var json = File.ReadAllText(path);
+            var lines = json.Split('\n').Where(l => !l.Contains("\"ChequeLeftMm\"") && !l.Contains("\"ChequeTopMm\""));
+            File.WriteAllText(path, string.Join('\n', lines));
+            Assert.DoesNotContain("ChequeLeftMm", File.ReadAllText(path));
+            foreach (var b in new DataStore(path).Data.Banks)
+                Assert.Equal((10.0, 10.0), (b.ChequeLeftMm, b.ChequeTopMm));
+        }
+        finally
+        {
+            File.Delete(path);
+            File.Delete(path + ".bak");
+        }
+    }
+}
+
 public class UpdateCheckTests
 {
     [Theory]

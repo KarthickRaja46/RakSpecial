@@ -3,6 +3,65 @@ using ChequeWriter.Core;
 
 namespace ChequeWriter;
 
+/// <summary>Which printer a cheque goes to, and a guard against "printers" that only make files.</summary>
+public static class Printers
+{
+    // Windows printers that save a file instead of printing on paper
+    static readonly string[] FileOnly = { "pdf", "xps", "onenote", "fax", "send to", "document writer", "print to file", "image writer", "snagit" };
+
+    public static List<string> Installed()
+    {
+        try { return PrinterSettings.InstalledPrinters.Cast<string>().ToList(); }
+        catch { return new(); }
+    }
+
+    public static bool IsFileOnly(string name) =>
+        FileOnly.Any(w => name.Contains(w, StringComparison.OrdinalIgnoreCase));
+
+    static string WindowsDefault()
+    {
+        try { return new PrinterSettings().PrinterName ?? ""; }
+        catch { return ""; }
+    }
+
+    /// <summary>
+    /// The printer for this cheque book: the one chosen for it before; otherwise the Windows default
+    /// when it is a real printer; otherwise the first real printer.
+    /// </summary>
+    public static string For(BankLayout bank)
+    {
+        var all = Installed();
+        if (bank.PrinterName.Length > 0 && all.Contains(bank.PrinterName)) return bank.PrinterName;
+        var def = WindowsDefault();
+        if (def.Length > 0 && !IsFileOnly(def) && all.Contains(def)) return def;
+        return all.FirstOrDefault(p => !IsFileOnly(p)) ?? def;
+    }
+
+    /// <summary>
+    /// Checks the printer before printing. Real cheques are never sent to a file-only printer;
+    /// for a test print the user may go ahead anyway.
+    /// </summary>
+    public static bool Ready(IWin32Window owner, string printer, bool realCheque)
+    {
+        if (printer.Length == 0)
+        {
+            MessageBox.Show(owner, "No printer is installed on this PC.\nAdd your printer in Windows Settings > Bluetooth & devices > Printers & scanners.",
+                "Printer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+        if (!IsFileOnly(printer)) return true;
+        var msg = $"\"{printer}\" does not print on paper - it saves a file instead.\n\n" +
+                  "Choose your real printer in the Printer box of the main window.";
+        if (realCheque)
+        {
+            MessageBox.Show(owner, msg, "Choose your printer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+        return MessageBox.Show(owner, msg + "\n\nSave the test print as a file anyway?", "Choose your printer",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
+    }
+}
+
 /// <summary>Builds a PrintDocument that prints cheques at exact millimetre positions.</summary>
 public static class ChequePrinter
 {
@@ -19,11 +78,8 @@ public static class ChequePrinter
         bool testPrint, string documentName)
     {
         var doc = new PrintDocument { DocumentName = documentName };
-        if (!string.IsNullOrWhiteSpace(bank.PrinterName) &&
-            PrinterSettings.InstalledPrinters.Cast<string>().Contains(bank.PrinterName))
-        {
-            doc.PrinterSettings.PrinterName = bank.PrinterName;
-        }
+        var printer = Printers.For(bank);
+        if (printer.Length > 0) doc.PrinterSettings.PrinterName = printer;
         ApplyPaper(doc, bank);
 
         var page = 0;
@@ -41,6 +97,8 @@ public static class ChequePrinter
             {
                 g.TranslateTransform(-(float)(e.PageSettings.HardMarginX * 0.254), -(float)(e.PageSettings.HardMarginY * 0.254));
             }
+            // the cheque's corner on the page (10 mm in from the paper corner, like Chrysanth Cheque Writer)
+            g.TranslateTransform((float)bank.ChequeLeftMm, (float)bank.ChequeTopMm);
             var showPicture = preview || (testPrint && settings.TestPrintPicture);
             ChequeRenderer.Draw(g, bank, data, text, new RenderOptions
             {
