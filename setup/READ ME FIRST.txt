@@ -1,0 +1,44 @@
+RAK SPECIAL - RAK Bank cheque printing
+=======================================
+
+WHAT IT DOES
+  - Prints RAK Bank cheques on an ordinary printer (A4 landscape,
+    cheque placed in the top-left corner against the paper guide).
+  - Two RAK cheque books - pick the one in your hand:
+      RAK Business  (RAK-001)  new business cheque, 202 x 99 mm
+      RAK Old       (RAK-002)  older, wider book,    206 x 100 mm
+    On the Old book the amount box sits lower than on the Business
+    book, so the wrong choice prints the figures in the wrong place.
+  - Amount in words with fils (e.g. 1250.50), payee list, cheque
+    register, duplicate-number warning, confirm box before printing.
+  - Preview shows your cheque on a picture of the real RAK cheque.
+  - Tools > PDC series: rent / instalment cheques - enter the series
+    once (e.g. 12 cheques, every month) and print them one by one.
+  - Tools > Layout editor: move any field, change size / bold,
+    printer offset for your printer.
+
+FILES
+  RAKSpecial.exe      - the program
+  INSTALL.bat         - installs it (no administrator needed)
+  UNINSTALL.bat       - removes it (your data is kept)
+  READ ME FIRST.txt   - this file
+
+HOW TO INSTALL
+  1. Right-click the ZIP -> "Extract All..." -> Extract.
+  2. Open the extracted folder and double-click INSTALL.bat.
+     If Windows shows "Windows protected your PC", click
+     "More info" -> "Run anyway".
+  3. Wait for "[DONE]" and press any key.
+  4. Open "RAK Special" from the Desktop.
+  To update later: run the new INSTALL.bat the same way.
+  Your data stays in %APPDATA%\RAK Special.
+
+BEFORE THE FIRST REAL CHEQUE
+  1. Choose the cheque book (RAK Business or RAK Old).
+  2. Click "Test print on plain paper". It prints the cheque picture
+     with your text on top. Hold it against a real cheque in front
+     of a light.
+  3. If everything is shifted the same way: Tools > Layout editor >
+     [ Cheque & printer settings ] > Offset X / Offset Y (mm).
+     If one field is off, drag it in the layout editor.
+  4. Use File > Backup data now and then.
