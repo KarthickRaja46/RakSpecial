@@ -100,8 +100,8 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
     </td>
     <td width="33%" valign="top">
       <h3>💬 Built-in support</h3>
-      Email or WhatsApp us from <i>Help</i> (F1), with your version and settings already filled in. Update alerts with
-      one-click download.
+      Email or WhatsApp us from <i>Help</i> (F1), with your version and settings already filled in. New versions install
+      with one click.
     </td>
   </tr>
 </table>
@@ -135,7 +135,8 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
 - Modern workspace: form on the left, live preview on the right, this month's figures always in view.
 - **Payee list** with auto-complete; new payees are saved automatically.
 - **Help & support** window (F1): email, WhatsApp, problem reports.
-- **Update check** once a day (can be turned off), with one-click download.
+- **Automatic updates**: when a new version is out, an *Update available* window opens at start. **Update now**
+  downloads it, installs it and reopens RAK Special by itself (can be turned off in *Tools → Settings*).
 
 </details>
 
@@ -223,7 +224,7 @@ Other banks can be set up with the layout editor; built-in layouts are on the [r
 
 | | |
 |---|---|
-| 🔄 **Update** | When a new version is out, RAK Special shows a yellow bar: click **Download the setup** and run it. Your data is kept, and a running RAK Special is closed for you first. |
+| 🔄 **Update** | Automatic. When a new version is out, RAK Special shows an **Update available** window when it starts: click **Update now**. It downloads, installs and reopens by itself, and your data is kept. You can also use *Help → Check for updates*. |
 | 🗑️ **Uninstall** | *Windows Settings → Apps → Installed apps → RAK Special → Uninstall*. Your data is kept. |
 | 💾 **No install allowed?** | [Download the portable ZIP](https://github.com/KarthickRaja46/RakSpecial/releases/latest/download/RAKSpecial-Portable.zip), extract it and double-click `RAKSpecial.exe`. Data stays in a `Data` folder beside it, so it runs from a USB stick too. |
 

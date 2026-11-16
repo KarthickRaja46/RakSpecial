@@ -56,8 +56,8 @@ public class MainForm : Form
     // ---------------- update check ----------------
 
     /// <summary>
-    /// Automatic: at most once a day, silent on errors, shows the yellow bar for a new version.
-    /// Manual (Help menu): always asks GitHub and reports the result.
+    /// Automatic (every start): silent on errors; a newer version opens the "Update available" window,
+    /// unless the user skipped that version. Manual (Help menu): always asks GitHub and reports the result.
     /// </summary>
     async Task CheckForUpdates(bool manual)
     {
@@ -68,7 +68,7 @@ public class MainForm : Form
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
-        if (!manual && (!s.CheckForUpdates || (DateTime.Now - s.LastUpdateCheck).TotalHours < 20)) return;
+        if (!manual && !s.CheckForUpdates) return;
 
         ReleaseInfo? latest;
         try { latest = await Updates.GetLatestAsync(); }
@@ -83,26 +83,46 @@ public class MainForm : Form
         Save();
 
         var newer = latest != null && UpdateCheck.IsNewer(latest.Version, Updates.Current);
-        if (manual)
+        if (!newer)
         {
-            if (!newer)
-            {
-                MessageBox.Show(this, $"You have the latest version ({Updates.Current}).", "Updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            if (MessageBox.Show(this, $"{AppInfo.Name} {latest!.Version} is available. You have {Updates.Current}.\n\n" +
-                    "Download the setup now? Run it when it has downloaded; your data is kept.",
-                    "Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-                Updates.Open(latest.SetupUrl ?? latest.PageUrl);
+            if (manual) MessageBox.Show(this, $"You have the latest version ({Updates.Current}).", "Updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
-        if (newer && latest!.Version.ToString() != s.SkippedVersion) ShowUpdateBar(latest);
+        if (!manual && latest!.Version.ToString() == s.SkippedVersion) return;
+        ShowUpdateDialog(latest!);
+    }
+
+    void ShowUpdateDialog(ReleaseInfo r)
+    {
+        foreach (var old in Controls.OfType<UpdateBar>().ToList()) old.Dispose();
+        UpdateChoice choice;
+        string setup;
+        using (var d = new UpdateDialog(r))
+        {
+            d.ShowDialog(this);
+            choice = d.Choice;
+            setup = d.SetupFile;
+        }
+        switch (choice)
+        {
+            case UpdateChoice.Install:
+                Save();
+                Updates.InstallAndExit(setup);
+                break;
+            case UpdateChoice.Skip:
+                _store.Data.Settings.SkippedVersion = r.Version.ToString();
+                Save();
+                break;
+            default:
+                ShowUpdateBar(r);   // a reminder for this session
+                break;
+        }
     }
 
     void ShowUpdateBar(ReleaseInfo r)
     {
         foreach (var old in Controls.OfType<UpdateBar>().ToList()) old.Dispose();
-        var bar = new UpdateBar(r, () => { _store.Data.Settings.SkippedVersion = r.Version.ToString(); Save(); });
+        var bar = new UpdateBar(r, () => ShowUpdateDialog(r), () => { _store.Data.Settings.SkippedVersion = r.Version.ToString(); Save(); });
         Controls.Add(bar);
         bar.SendToBack();
         _header.SendToBack();          // order from the top: menu, header, update bar

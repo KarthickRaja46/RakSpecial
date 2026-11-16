@@ -226,7 +226,7 @@ public class AppSettings
     public bool TestPrintPicture { get; set; } = true;
 
     [Category("Program"), DisplayName("Check for updates"),
-     Description("Once a day, ask GitHub whether a newer RAK Special is out. Only the latest version number is fetched; none of your data is sent.")]
+     Description("When RAK Special starts, ask GitHub whether a newer version is out and offer to install it. Only the latest version number is fetched; none of your data is sent.")]
     public bool CheckForUpdates { get; set; } = true;
 
     [Browsable(false)] public DateTime LastUpdateCheck { get; set; }

@@ -89,3 +89,5 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "Open {#AppName} now"; Flags: nowait postinstall skipifsilent
+; In-app updates run this setup silently: reopen RAK Special when it has finished.
+Filename: "{app}\{#AppExe}"; Flags: nowait skipifnotsilent
