@@ -32,9 +32,9 @@
 
 ### ⚡ See it in action
 
-<img src="docs/readme/demo.gif" width="920" alt="RAK Special demo: typing the payee and amount, the amount in words in AED and fils appears and the live cheque preview updates, then switching between RAK Business and RAK Old cheque books">
+<img src="docs/readme/demo.gif" width="920" alt="RAK Special demo: typing the payee and amount, the amount in words in AED and fils appears and the live preview fills in on the real RAK Bank cheque picture, then switching between RAK Business and RAK Old cheque books">
 
-<sub>Real recording: type the payee and amount, and the words and the cheque preview follow live. Switch cheque books with one click.</sub>
+<sub>Real recording: type the payee and amount, and the words and the cheque preview follow live on a picture of the real cheque. Switch cheque books with one click.</sub>
 
 <br><br>
 
@@ -148,8 +148,8 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/main-window.png" width="92%" alt="RAK Special main window: New cheque form, amount in words in AED, live cheque preview and monthly totals">
-  <br><sub><b>Main window</b>: the cheque form, live preview, and this month's figures</sub>
+  <img src="docs/screenshots/main-window.png" width="92%" alt="RAK Special main window: New cheque form, amount in words in AED, live preview on the RAK Bank Business cheque picture and monthly totals">
+  <br><sub><b>Main window</b>: the cheque form, live preview on the real cheque picture, and this month's figures</sub>
 </p>
 
 <table>
