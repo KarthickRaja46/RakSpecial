@@ -1,0 +1,34 @@
+RAK Special is installed. Before your first real cheque, do these steps once:
+
+1. CHOOSE YOUR CHEQUE BOOK
+   At the top of the window, pick the book in your hand:
+     RAK Business (RAK-001)  - new business cheque, 202 x 99 mm
+     RAK Old      (RAK-002)  - older, wider book,   206 x 100 mm
+   The amount box is in a different place on each book, so the
+   wrong choice prints the figures in the wrong place.
+
+2. TEST ON PLAIN PAPER
+   Click "Test print" (on plain paper). Hold the sheet against a real
+   cheque in front of a light and check that the text lines up.
+
+3. ADJUST IF NEEDED
+   Everything shifted the same way:
+     Tools > Layout editor > Cheque & printer settings > Offset X / Offset Y
+   Only one field is off:
+     Tools > Layout editor, then drag that field.
+
+4. PRINT
+   Put the cheque in the top-left corner of an A4 landscape page,
+   against the paper guide, and press Print cheque (Ctrl+P).
+
+Tips
+  - Tools > PDC series prints rent or instalment cheques in one go.
+  - File > Backup data now and then.
+  - Tools > Analytics shows totals by month and payee, and the
+    post-dated cheques still to come.
+  - Your data is kept in %APPDATA%\RAK Special. Uninstalling or
+    updating RAK Special does not delete it.
+
+Need help?  Help > Help & support (F1) in the program, or:
+  Email      karthickraja232205@gmail.com
+  WhatsApp   +971 50 256 7444 (UAE)   |   +91 63832 68445 (India)

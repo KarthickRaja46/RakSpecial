@@ -19,6 +19,15 @@ public static class CsvExport
         return sb.ToString();
     }
 
+    /// <summary>Any table (e.g. an analytics view) as CSV: one header line, then the rows as shown.</summary>
+    public static string Table(IEnumerable<string> headers, IEnumerable<IEnumerable<string?>> rows)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(string.Join(",", headers.Select(Q)));
+        foreach (var r in rows) sb.AppendLine(string.Join(",", r.Select(Q)));
+        return sb.ToString();
+    }
+
     /// <summary>Quotes a CSV value and neutralises spreadsheet formulas (=, +, -, @ at the start).</summary>
     static string Q(string? v)
     {

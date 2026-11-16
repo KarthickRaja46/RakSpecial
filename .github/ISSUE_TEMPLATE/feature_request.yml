@@ -1,0 +1,20 @@
+name: Feature request
+description: Suggest a new feature, another bank's cheque book, or an improvement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you need?
+      description: Describe the problem or the work it would save, e.g. "I print 40 salary cheques every month".
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How should it work?
+  - type: input
+    id: bank
+    attributes:
+      label: Bank and cheque book (for a new cheque layout)
+      placeholder: "Emirates NBD business cheque, 203 x 95 mm"

@@ -1,5 +1,19 @@
-RAK SPECIAL - RAK Bank cheque printing
-=======================================
+RAK SPECIAL - RAK Bank cheque printing (portable copy)
+=====================================================
+
+This is the no-install copy. Most people should use
+RAKSpecial-Setup-<version>.exe instead: it adds the Start menu
+and Desktop shortcuts and an uninstaller.
+
+FILES
+  RAKSpecial.exe      - the program. Double-click to start.
+  portable.txt        - keeps your data in a "Data" folder next to
+                        RAKSpecial.exe (good for a USB stick).
+                        Delete it to keep data in %APPDATA%\RAK Special.
+  READ ME FIRST.txt   - this file
+
+If Windows shows "Windows protected your PC", click
+"More info" -> "Run anyway".
 
 WHAT IT DOES
   - Prints RAK Bank cheques on an ordinary printer (A4 landscape,
@@ -11,34 +25,24 @@ WHAT IT DOES
     book, so the wrong choice prints the figures in the wrong place.
   - Amount in words with fils (e.g. 1250.50), payee list, cheque
     register, duplicate-number warning, confirm box before printing.
-  - Preview shows your cheque on a picture of the real RAK cheque.
   - Tools > PDC series: rent / instalment cheques - enter the series
     once (e.g. 12 cheques, every month) and print them one by one.
   - Tools > Layout editor: move any field, change size / bold,
     printer offset for your printer.
 
-FILES
-  RAKSpecial.exe      - the program
-  INSTALL.bat         - installs it (no administrator needed)
-  UNINSTALL.bat       - removes it (your data is kept)
-  READ ME FIRST.txt   - this file
-
-HOW TO INSTALL
-  1. Right-click the ZIP -> "Extract All..." -> Extract.
-  2. Open the extracted folder and double-click INSTALL.bat.
-     If Windows shows "Windows protected your PC", click
-     "More info" -> "Run anyway".
-  3. Wait for "[DONE]" and press any key.
-  4. Open "RAK Special" from the Desktop.
-  To update later: run the new INSTALL.bat the same way.
-  Your data stays in %APPDATA%\RAK Special.
-
 BEFORE THE FIRST REAL CHEQUE
   1. Choose the cheque book (RAK Business or RAK Old).
-  2. Click "Test print on plain paper". It prints the cheque picture
-     with your text on top. Hold it against a real cheque in front
-     of a light.
+  2. Click "Test print" (on plain paper). Hold it against a real
+     cheque in front of a light.
   3. If everything is shifted the same way: Tools > Layout editor >
      [ Cheque & printer settings ] > Offset X / Offset Y (mm).
      If one field is off, drag it in the layout editor.
   4. Use File > Backup data now and then.
+
+SUPPORT
+  In the program: Help > Help & support (F1)
+  Email      karthickraja232205@gmail.com
+  WhatsApp   +971 50 256 7444 (UAE)
+             +91 63832 68445  (India)
+  Problems   https://github.com/KarthickRaja46/RakSpecial/issues
+  Updates    https://github.com/KarthickRaja46/RakSpecial/releases

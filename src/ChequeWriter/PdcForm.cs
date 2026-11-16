@@ -167,7 +167,7 @@ public class PdcForm : Form
         if (!Validate(out var problem)) { MessageBox.Show(this, problem, "PDC series", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
         var nos = _items.Where(i => i.ChequeNo.Length > 0).Select(i => i.ChequeNo).ToHashSet();
-        var dups = _store.Data.Cheques.Where(c => c.Status == ChequeStatus.Printed && c.BankId == _bank.Id && nos.Contains(c.ChequeNo))
+        var dups = _store.Data.Cheques.Where(c => c.Status.UsesNumber() && c.BankId == _bank.Id && nos.Contains(c.ChequeNo))
                          .Select(c => c.ChequeNo).Distinct().ToList();
         if (dups.Count > 0 && MessageBox.Show(this,
                 $"These cheque numbers were already printed: {string.Join(", ", dups.Take(10))}{(dups.Count > 10 ? " ..." : "")}\n\nPrint the series anyway?",

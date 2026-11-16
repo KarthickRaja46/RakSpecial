@@ -14,7 +14,11 @@ public static class AppIcon
     }
 
     /// <summary>Gives every window the app icon as soon as it is created.</summary>
-    public static void Apply(Form f) => f.Icon = Get();
+    public static void Apply(Form f)
+    {
+        f.Icon = Get();
+        Theme.TitleBar(f);
+    }
 }
 
 /// <summary>A simple OK/Cancel window around a PropertyGrid.</summary>

@@ -1,0 +1,42 @@
+name: Problem report
+description: Something prints in the wrong place, shows a wrong amount, or does not work.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting. **Never attach a photo of a real or signed cheque, an account number or a signature.**
+        A photo of a *test print on plain paper* is the most useful thing you can send.
+  - type: input
+    id: version
+    attributes:
+      label: RAK Special version
+      description: Help > About RAK Special
+      placeholder: "2.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: book
+    attributes:
+      label: Cheque book
+      options: [RAK Business (RAK-001), RAK Old (RAK-002), Other / my own layout]
+    validations:
+      required: true
+  - type: input
+    id: printer
+    attributes:
+      label: Printer model
+      placeholder: "HP LaserJet Pro M404"
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you typed, what was printed or shown, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details from Help & support
+      description: In the program, open Help > Help & support (F1), click "Copy these details" and paste here.
+      render: text

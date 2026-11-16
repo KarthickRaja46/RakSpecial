@@ -2,11 +2,6 @@ using ChequeWriter.Core;
 
 namespace ChequeWriter;
 
-public static class AppInfo
-{
-    public const string Name = "RAK Special";
-}
-
 /// <summary>
 /// The picture of a blank cheque for a cheque book: the user's own scan when one is set,
 /// otherwise the picture built into the program. Images are cached; callers must not dispose them.

@@ -153,7 +153,24 @@ public class ChequeData
     public string ChequeNo { get; set; } = "";
 }
 
-public enum ChequeStatus { Printed, Void }
+/// <summary>
+/// Printed = given out, not yet seen on the bank statement. Cleared = paid by the bank.
+/// Bounced = returned unpaid. Stopped = payment stopped. Void = spoilt or cancelled leaf.
+/// Saved by name, so new values can be added at the end.
+/// </summary>
+public enum ChequeStatus { Printed, Void, Cleared, Bounced, Stopped }
+
+public static class ChequeStatusInfo
+{
+    /// <summary>Money that has gone, or will go, to the payee: counted in totals and analytics.</summary>
+    public static bool CountsAsPaid(this ChequeStatus s) => s is ChequeStatus.Printed or ChequeStatus.Cleared;
+
+    /// <summary>The cheque number is taken (used for the duplicate-number warning). A void leaf can be reprinted.</summary>
+    public static bool UsesNumber(this ChequeStatus s) => s != ChequeStatus.Void;
+
+    public static readonly ChequeStatus[] All =
+        { ChequeStatus.Printed, ChequeStatus.Cleared, ChequeStatus.Bounced, ChequeStatus.Stopped, ChequeStatus.Void };
+}
 
 /// <summary>One line in the cheque register.</summary>
 public class ChequeRecord
@@ -208,6 +225,12 @@ public class AppSettings
      Description("Plain-paper test prints include the cheque picture, so you can see where the text lands. Real cheques never print the picture.")]
     public bool TestPrintPicture { get; set; } = true;
 
+    [Category("Program"), DisplayName("Check for updates"),
+     Description("Once a day, ask GitHub whether a newer RAK Special is out. Only the latest version number is fetched; none of your data is sent.")]
+    public bool CheckForUpdates { get; set; } = true;
+
+    [Browsable(false)] public DateTime LastUpdateCheck { get; set; }
+    [Browsable(false)] public string SkippedVersion { get; set; } = "";
     [Browsable(false)] public string LastBankId { get; set; } = "";
 }
 
