@@ -177,12 +177,26 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
 
 ## 🏦 Supported cheque books
 
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/cheques/rak-business.png" alt="RAK Bank Business cheque (RAK-001), 202 x 99 mm, supported by RAK Special cheque printing software">
+      <p align="center"><b>RAK Business</b> · RAK-001 · 202 × 99 mm<br><sub>Amount box level with the <b>first</b> words line</sub></p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/cheques/rak-old.png" alt="RAK Bank older wider cheque (RAK-002), 206 x 100 mm, supported by RAK Special cheque printing software">
+      <p align="center"><b>RAK Old</b> · RAK-002 · 206 × 100 mm<br><sub>Amount box lower, level with the <b>second</b> words line</sub></p>
+    </td>
+  </tr>
+</table>
+
 | Cheque book | Code | Leaf size | How to tell them apart |
 |---|---|---|---|
 | RAK Business (new model) | RAK-001 | 202 × 99 mm | Amount box level with the **first** words line |
 | RAK Old (wider book) | RAK-002 | 206 × 100 mm | Amount box lower, level with the **second** words line |
 
-Choose the book in your hand: the wrong choice prints the figures in the wrong place.
+Choose the book in your hand: the wrong choice prints the figures in the wrong place. The RAK Business picture is
+measured against a real printed cheque (landmarks within 0.2 mm on average).
 Other banks can be set up with the layout editor; built-in layouts are on the [roadmap](#-roadmap).
 
 ## 💻 System requirements
