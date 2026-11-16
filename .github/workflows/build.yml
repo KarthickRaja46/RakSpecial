@@ -42,11 +42,24 @@ jobs:
           Copy-Item (Get-Item Share/RAKSpecial-Setup-*.exe).FullName Share/RAKSpecial-Setup.exe
           Copy-Item (Get-Item Share/RAKSpecial-Portable-*.zip).FullName Share/RAKSpecial-Portable.zip
 
+      # The "## <version>" section of CHANGELOG.md becomes the release notes
+      # (shown on GitHub and in the app's "Update available" window).
+      - name: Release notes from CHANGELOG.md
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $ver = '${{ github.ref_name }}'.TrimStart('v')
+          $text = (Get-Content CHANGELOG.md -Raw) -replace "`r", ''
+          $m = [regex]::Match($text, "(?ms)^## \[?$([regex]::Escape($ver))\]?[^\n]*\n(.*?)(?=^## |\z)")
+          $notes = if ($m.Success -and $m.Groups[1].Value.Trim()) { $m.Groups[1].Value.Trim() } else { 'Improvements and fixes.' }
+          Set-Content -Path release-notes.md -Value $notes -Encoding utf8
+          Write-Host $notes
+
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
+          body_path: release-notes.md
           files: |
             Share/RAKSpecial-Setup.exe
             Share/RAKSpecial-Portable.zip

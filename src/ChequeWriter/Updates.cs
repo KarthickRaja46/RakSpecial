@@ -222,13 +222,16 @@ public class UpdateDialog : Form
     /// <summary>GitHub release notes without Markdown symbols.</summary>
     static string CleanNotes(string notes)
     {
-        if (string.IsNullOrWhiteSpace(notes)) return "Improvements and fixes.";
+        const string fallback = "Improvements and fixes.\r\n\r\nClick 'Release page' below for the details.";
+        if (string.IsNullOrWhiteSpace(notes)) return fallback;
         var lines = notes.Replace("\r", "").Split('\n')
             .Select(l => l.Trim().TrimStart('#').Trim().Replace("**", "").Replace("`", ""))
             .Where(l => !l.StartsWith("What's Changed", StringComparison.OrdinalIgnoreCase) &&
                         !l.StartsWith("Full Changelog", StringComparison.OrdinalIgnoreCase))
-            .Select(l => l.StartsWith("* ") || l.StartsWith("- ") ? "•  " + l[2..] : l);
-        return string.Join(Environment.NewLine, lines).Trim();
+            .Select(l => l.StartsWith("* ") || l.StartsWith("- ") ? "•  " + l[2..] : l)
+            .Select(l => l.Replace("*", ""));
+        var text = string.Join(Environment.NewLine, lines).Trim();
+        return text.Length > 0 ? text : fallback;   // GitHub's automatic notes can be only a "Full Changelog" link
     }
 }
 

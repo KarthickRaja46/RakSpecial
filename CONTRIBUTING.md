@@ -48,8 +48,10 @@ While you work, use a portable data folder so your real cheque register is not t
 1. Raise `<Version>` in `src/ChequeWriter/ChequeWriter.csproj`. The update check compares this number with the
    newest release tag, so every release needs a higher version. `AppInfo.GitHubRepo` (in `ChequePictures.cs`) must
    name the repository, e.g. `owner/rak-special`.
-2. Commit, then tag and push: `git tag v2.1.0 && git push --tags`.
-3. GitHub Actions runs the tests, builds `RAKSpecial-Setup-2.1.0.exe` and `RAKSpecial-Portable-2.1.0.zip`, and
+2. Add a `## <version>` section at the top of `CHANGELOG.md` with short, plain lines for users. It becomes the
+   release notes on GitHub and in the app's *Update available* window.
+3. Commit, then tag and push: `git tag v2.1.0 && git push --tags`.
+4. GitHub Actions runs the tests, builds `RAKSpecial-Setup-2.1.0.exe` and `RAKSpecial-Portable-2.1.0.zip`, and
    publishes them as a release, together with fixed-name copies (`RAKSpecial-Setup.exe`, `RAKSpecial-Portable.zip`)
    that the README's download buttons link to. Edit the release notes on GitHub if needed.
 
