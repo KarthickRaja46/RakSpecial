@@ -171,7 +171,7 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
   </tr>
 </table>
 
-<sub>Screenshots use sample data. The preview shows the cheque outline; you can add your own scan of a blank cheque in the layout editor.</sub>
+<sub>Screenshots use sample data.</sub>
 
 <img src="docs/readme/divider.svg" width="100%" alt="">
 
@@ -410,9 +410,8 @@ makes GitHub Actions run the tests, build the setup and the portable ZIP, and pu
 
 Project links and support contacts are set in one place: `src/ChequeWriter/AppInfo.cs`.
 
-The cheque pictures (`src/ChequeWriter/Images/rak-business.jpg`, `rak-old.jpg`) are not in this repository. Add your
-own scans of blank, cancelled cheques with those names to build them in, or leave them out: the program still works
-and shows the cheque outline instead.
+The cheque pictures shown in the preview and on test prints are built in from `src/ChequeWriter/Images/rak-business.jpg`
+and `rak-old.jpg` (clean pictures at exact cheque size, 200 dpi). Users can still pick their own scan in the layout editor.
 
 </details>
 

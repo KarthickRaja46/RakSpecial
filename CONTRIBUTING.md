@@ -25,8 +25,8 @@ help instead, email karthickraja232205@gmail.com or WhatsApp +971 50 256 7444 (U
    dotnet test                              :: all tests must pass
    dotnet run --project src\ChequeWriter    :: start the app
    ```
-3. The cheque pictures (`src/ChequeWriter/Images/*.jpg`) are not in the repository. Without them the preview
-   shows the cheque outline, which is fine for development.
+3. The cheque pictures (`src/ChequeWriter/Images/*.jpg`) are built into the program. If you replace one, keep it at
+   the exact cheque proportions (e.g. 202 × 99 mm) or the preview will not line up with the printed text.
 
 While you work, use a portable data folder so your real cheque register is not touched: create an empty
 `portable.txt` next to the built `RAKSpecial.exe` (in `src/ChequeWriter/bin/Debug/net8.0-windows/`).

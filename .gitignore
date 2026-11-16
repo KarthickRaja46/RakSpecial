@@ -490,5 +490,3 @@ publish/
 # RAK Special build output
 publish/
 Share/
-# cheque pictures come from a public cheque-sample website: kept local, not published
-src/ChequeWriter/Images/*.jpg
