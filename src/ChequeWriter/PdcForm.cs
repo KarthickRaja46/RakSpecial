@@ -180,8 +180,11 @@ public class PdcForm : Form
                 $"Cheque book: {_bank.Name} {_bank.Code}\n\nThe program will ask you to put in each cheque before it prints. Start?",
                 "Print PDC series", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK) return;
 
-        // the cheque book's printer (chosen in the main window)
-        if (!Printers.Ready(this, Printers.For(_bank), realCheque: true)) return;
+        // choose the printer once for the whole series (RAK Special's print popup)
+        using (var first = ChequePrinter.Create(_bank, DataFor(_items[0]), _store.Data.Settings, testPrint: false))
+        {
+            if (!PrintPopup.Choose(this, first, _bank)) return;   // each cheque below goes to this printer
+        }
 
         var done = 0;
         foreach (var it in _items)

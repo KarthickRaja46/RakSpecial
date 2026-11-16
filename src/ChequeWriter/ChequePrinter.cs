@@ -37,29 +37,6 @@ public static class Printers
         return all.FirstOrDefault(p => !IsFileOnly(p)) ?? def;
     }
 
-    /// <summary>
-    /// Checks the printer before printing. Real cheques are never sent to a file-only printer;
-    /// for a test print the user may go ahead anyway.
-    /// </summary>
-    public static bool Ready(IWin32Window owner, string printer, bool realCheque)
-    {
-        if (printer.Length == 0)
-        {
-            MessageBox.Show(owner, "No printer is installed on this PC.\nAdd your printer in Windows Settings > Bluetooth & devices > Printers & scanners.",
-                "Printer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return false;
-        }
-        if (!IsFileOnly(printer)) return true;
-        var msg = $"\"{printer}\" does not print on paper - it saves a file instead.\n\n" +
-                  "Choose your real printer in the Printer box of the main window.";
-        if (realCheque)
-        {
-            MessageBox.Show(owner, msg, "Choose your printer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return false;
-        }
-        return MessageBox.Show(owner, msg + "\n\nSave the test print as a file anyway?", "Choose your printer",
-            MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
-    }
 }
 
 /// <summary>Builds a PrintDocument that prints cheques at exact millimetre positions.</summary>
@@ -97,8 +74,7 @@ public static class ChequePrinter
             {
                 g.TranslateTransform(-(float)(e.PageSettings.HardMarginX * 0.254), -(float)(e.PageSettings.HardMarginY * 0.254));
             }
-            // the cheque's corner on the page (10 mm in from the paper corner, like Chrysanth Cheque Writer)
-            g.TranslateTransform((float)bank.ChequeLeftMm, (float)bank.ChequeTopMm);
+            PlaceCheque(g, bank, e.PageSettings);
             var showPicture = preview || (testPrint && settings.TestPrintPicture);
             ChequeRenderer.Draw(g, bank, data, text, new RenderOptions
             {
@@ -113,13 +89,64 @@ public static class ChequePrinter
         return doc;
     }
 
+    /// <summary>
+    /// Moves (and for a portrait feed turns) the drawing so that cheque coordinates land where the cheque
+    /// physically is in the printer. Units are millimetres from the paper's top-left corner.
+    /// </summary>
+    public static void PlaceCheque(Graphics g, BankLayout bank, PageSettings? page = null)
+    {
+        if (bank.Feed == ChequeFeed.Landscape)
+        {
+            // A4 landscape, cheque 10 mm in from the corner (like Chrysanth's landscape template)
+            g.TranslateTransform((float)bank.ChequeLeftMm, (float)bank.ChequeTopMm);
+            return;
+        }
+        // Portrait: the cheque stands up, narrow side first, centred across the tray
+        var pageWidth = Math.Min(bank.PaperWidthMm, bank.PaperHeightMm);
+        var across = (float)((pageWidth - bank.ChequeHeightMm) / 2 + bank.PortraitAcrossMm);
+        var lead = (float)bank.PortraitLeadMm;
+        if (bank.PortraitTurn == FeedTurn.Clockwise)
+        {
+            // cheque top edge faces right; its left (perforated) edge enters the printer first
+            g.TranslateTransform(across + (float)bank.ChequeHeightMm, lead);
+            g.RotateTransform(90);
+        }
+        else
+        {
+            // cheque top edge faces left; its right edge enters the printer first
+            g.TranslateTransform(across, lead + (float)bank.ChequeWidthMm);
+            g.RotateTransform(-90);
+        }
+    }
+
+    /// <summary>
+    /// RAK Special's own print popup (<see cref="PrintPopup"/>): the user picks the printer, the page is set to
+    /// the cheque book's paper and orientation, and the document is printed. Returns false when cancelled or failed.
+    /// </summary>
+    public static bool PrintWithDialog(IWin32Window owner, PrintDocument doc, BankLayout bank)
+    {
+        if (!PrintPopup.Choose(owner, doc, bank)) return false;
+        try
+        {
+            doc.Print();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(owner, "Printing failed:\n" + ex.Message, "Print", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
+    }
+
     /// <summary>Uses a standard paper size when the printer has one that matches, otherwise a custom size.</summary>
-    static void ApplyPaper(PrintDocument doc, BankLayout bank)
+    public static void ApplyPaper(PrintDocument doc, BankLayout bank)
     {
         var w = bank.PaperWidthMm; var h = bank.PaperHeightMm;
-        var landscape = w > h;
+        // portrait feed: the same paper (A4) used upright
+        var landscape = bank.Feed == ChequeFeed.Landscape && w > h;
         var shortMm = Math.Min(w, h); var longMm = Math.Max(w, h);
         var ps = doc.DefaultPageSettings;
+        ps.PrinterSettings = doc.PrinterSettings;
         ps.Margins = new Margins(0, 0, 0, 0);
         ps.Landscape = landscape;
 

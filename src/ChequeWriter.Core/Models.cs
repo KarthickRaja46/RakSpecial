@@ -105,13 +105,29 @@ public class BankLayout
     public double ChequeHeightMm { get; set; } = 94;
 
     [Category("Page"), DisplayName("Cheque left edge on page (mm)"),
-     Description("Where the cheque sits on the page when you feed it: distance from the paper's left edge. " +
-                 "10 mm is the same as Chrysanth Cheque Writer.")]
+     Description("Landscape feed only: distance from the paper's left edge to the cheque.")]
     public double ChequeLeftMm { get; set; } = 10;
 
     [Category("Page"), DisplayName("Cheque top edge on page (mm)"),
-     Description("Distance from the paper's top edge to the top of the cheque. 10 mm is the same as Chrysanth Cheque Writer.")]
+     Description("Landscape feed only: distance from the paper's top edge to the cheque.")]
     public double ChequeTopMm { get; set; } = 10;
+
+    [Category("Cheque feed"), DisplayName("Cheque feed"),
+     Description("Portrait (centred): the cheque goes into the printer standing up, narrow side first, in the middle of the tray. " +
+                 "Landscape: an A4 landscape page with the cheque at 'Cheque left/top edge on page'.")]
+    public ChequeFeed Feed { get; set; } = ChequeFeed.PortraitCentred;
+
+    [Category("Cheque feed"), DisplayName("Portrait: turn the text"),
+     Description("Clockwise: the cheque's left (perforated) edge goes into the printer first. Anticlockwise: its right edge goes in first.")]
+    public FeedTurn PortraitTurn { get; set; } = FeedTurn.Clockwise;
+
+    [Category("Cheque feed"), DisplayName("Portrait: cheque from paper top (mm)"),
+     Description("How far into the page the cheque's leading edge is, measured from the top of the paper.")]
+    public double PortraitLeadMm { get; set; }
+
+    [Category("Cheque feed"), DisplayName("Portrait: move across (mm)"),
+     Description("Moves the cheque area right (+) or left (-) from the centre of the page.")]
+    public double PortraitAcrossMm { get; set; }
 
     [Category("Printer adjustment"), DisplayName("Offset X (mm)"), Description("Moves everything right (+) or left (-). Use this to match your printer.")]
     public double OffsetXmm { get; set; }
@@ -161,6 +177,12 @@ public class ChequeData
     public bool StrikeBearer { get; set; } = true;
     public string ChequeNo { get; set; } = "";
 }
+
+/// <summary>How the cheque goes into the printer.</summary>
+public enum ChequeFeed { PortraitCentred, Landscape }
+
+/// <summary>Which way the cheque is turned for a portrait feed.</summary>
+public enum FeedTurn { Clockwise, Anticlockwise }
 
 /// <summary>
 /// Printed = given out, not yet seen on the bank statement. Cleared = paid by the bank.

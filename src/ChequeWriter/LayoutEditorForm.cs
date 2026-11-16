@@ -121,10 +121,8 @@ public class LayoutEditorForm : Form
 
     void TestPrint()
     {
-        if (!Printers.Ready(this, Printers.For(_work), realCheque: false)) return;
         using var doc = ChequePrinter.Create(_work, _sample, _store.Data.Settings, testPrint: true);
-        try { doc.Print(); }
-        catch (Exception ex) { MessageBox.Show(this, "Printing failed:\n" + ex.Message, "Print", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        ChequePrinter.PrintWithDialog(this, doc, _work);
     }
 
     void ResetDefaults()
@@ -151,6 +149,8 @@ public class LayoutEditorForm : Form
         _original.PaperWidthMm = _work.PaperWidthMm; _original.PaperHeightMm = _work.PaperHeightMm;
         _original.ChequeWidthMm = _work.ChequeWidthMm; _original.ChequeHeightMm = _work.ChequeHeightMm;
         _original.ChequeLeftMm = _work.ChequeLeftMm; _original.ChequeTopMm = _work.ChequeTopMm;
+        _original.Feed = _work.Feed; _original.PortraitTurn = _work.PortraitTurn;
+        _original.PortraitLeadMm = _work.PortraitLeadMm; _original.PortraitAcrossMm = _work.PortraitAcrossMm;
         _original.OffsetXmm = _work.OffsetXmm; _original.OffsetYmm = _work.OffsetYmm;
         _original.PrinterName = _work.PrinterName; _original.DateFormat = _work.DateFormat;
         _original.FontName = _work.FontName; _original.NextChequeNo = _work.NextChequeNo;

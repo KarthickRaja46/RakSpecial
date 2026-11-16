@@ -23,14 +23,6 @@ public class MainForm : Form
     readonly ToggleSwitch _bearer = new() { Text = "Cross out \"or Bearer\"", Checked = true, Dock = DockStyle.Top };
     readonly ChequePreview _preview = new() { Dock = DockStyle.Fill, BackColor = Color.FromArgb(246, 247, 249) };
     readonly ToolTip _tips = new();
-    readonly ComboBox _printer = new() { DropDownStyle = ComboBoxStyle.DropDownList, FlatStyle = FlatStyle.Flat, Font = Theme.Ui(10.5f), Dock = DockStyle.Fill };
-    readonly Label _printerWarn = new()
-    {
-        AutoSize = true, ForeColor = Theme.Danger, Font = Theme.Ui(8.5f), Visible = false,
-        Text = "This saves a file (PDF) - it does not print on paper. Choose your real printer.",
-    };
-    bool _fillingPrinters;
-    const string NoPrinter = "(no printer installed)";
     readonly StatTile _statMonth = new("This month");
     readonly StatTile _statUncleared = new("Awaiting clearing");
     readonly StatTile _statNext = new("Next post-dated cheque");
@@ -294,35 +286,35 @@ public class MainForm : Form
         toggles.Controls.Add(_acPayee);
         Row(toggles, height: S(74));
 
-        Row(Caption("Printer"));
-        Row(Framed(_printer, 42), height: S(42));
-        _printerWarn.Margin = new Padding(0, S(4), 0, 0);
-        Row(_printerWarn);
-        _printer.DropDown += (_, _) => FillPrinters();
-        _printer.SelectedIndexChanged += (_, _) =>
-        {
-            if (_fillingPrinters || _printer.SelectedItem is not string p || p == NoPrinter) return;
-            Bank.PrinterName = p;
-            Save();
-            ShowPrinterWarning();
-        };
+        // fields scroll when the window is short; the buttons below never move off screen
+        f.Dock = DockStyle.Top;
+        f.AutoSize = true;
+        f.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        var fields = new Panel { Dock = DockStyle.Fill, AutoScroll = true, BackColor = Theme.Card };
+        fields.Controls.Add(f);
 
-        f.RowCount++;
-        f.RowStyles.Add(new RowStyle(SizeType.Percent, 100));   // pushes the buttons to the bottom
-
-        var print = new RoundButton { Text = "Print cheque", Glyph = Theme.Glyph.Print, Hint = "Ctrl+P", Kind = ButtonKind.Primary, Dock = DockStyle.Fill, Font = Theme.Semibold(11.5f), Radius = 10 };
+        var buttons = new TableLayoutPanel { Dock = DockStyle.Bottom, ColumnCount = 2, RowCount = 3, Height = S(158), BackColor = Theme.Card, Padding = new Padding(0, S(10), 0, 0) };
+        buttons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        buttons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        buttons.RowStyles.Add(new RowStyle(SizeType.Absolute, S(54)));
+        buttons.RowStyles.Add(new RowStyle(SizeType.Absolute, S(52)));
+        buttons.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        var print = new RoundButton { Text = "Print cheque", Glyph = Theme.Glyph.Print, Hint = "Ctrl+P", Kind = ButtonKind.Primary, Dock = DockStyle.Fill, Font = Theme.Semibold(11.5f), Radius = 10, Margin = new Padding(0, 0, 0, S(2)) };
         print.Click += (_, _) => PrintCheque();
-        Row(print, height: S(52));
-        var preview = new RoundButton { Text = "Preview", Glyph = Theme.Glyph.Preview, Dock = DockStyle.Fill, Margin = new Padding(0, S(8), 0, 0) };
+        var preview = new RoundButton { Text = "Preview", Glyph = Theme.Glyph.Preview, Dock = DockStyle.Fill, Margin = new Padding(0, S(8), S(6), 0) };
         preview.Click += (_, _) => Preview();
-        var test = new RoundButton { Text = "Test print", Glyph = Theme.Glyph.Page, Dock = DockStyle.Fill, Margin = new Padding(0, S(8), 0, 0) };
+        var test = new RoundButton { Text = "Test print", Glyph = Theme.Glyph.Page, Dock = DockStyle.Fill, Margin = new Padding(S(6), S(8), 0, 0) };
         test.Click += (_, _) => TestPrint();
         _tips.SetToolTip(test, "Print on plain paper with the cheque picture, to check alignment");
-        Pair(preview, test, S(50));
         var clear = new RoundButton { Text = "Clear form", Glyph = Theme.Glyph.Clear, Kind = ButtonKind.Ghost, Dock = DockStyle.Fill, Font = Theme.Ui(9.5f), Margin = new Padding(0, S(6), 0, 0) };
         clear.Click += (_, _) => ClearEntry();
-        Row(clear, height: S(42));
-        formCard.Controls.Add(f);
+        buttons.Controls.Add(print, 0, 0); buttons.SetColumnSpan(print, 2);
+        buttons.Controls.Add(preview, 0, 1);
+        buttons.Controls.Add(test, 1, 1);
+        buttons.Controls.Add(clear, 0, 2); buttons.SetColumnSpan(clear, 2);
+
+        formCard.Controls.Add(fields);
+        formCard.Controls.Add(buttons);
 
         // right: live preview and figures
         var right = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Canvas, Padding = new Padding(S(18), 0, 0, 0) };
@@ -376,29 +368,9 @@ public class MainForm : Form
         Text = $"{AppInfo.Name} - {Bank.Name}";
         _bookInfo.Text = (Bank.Code.Length > 0 ? Bank.Code + "  ·  " : "") + $"{Bank.ChequeWidthMm:0.#} × {Bank.ChequeHeightMm:0.#} mm";
         _chequeNo.Text = Bank.NextChequeNo;
-        FillPrinters();
         RefreshPayeeList();
         UpdatePreview();
     }
-
-    /// <summary>The installed printers, with this cheque book's printer selected. Real printers first.</summary>
-    void FillPrinters()
-    {
-        _fillingPrinters = true;
-        var all = Printers.Installed().OrderBy(Printers.IsFileOnly).ThenBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
-        _printer.BeginUpdate();
-        _printer.Items.Clear();
-        foreach (var p in all) _printer.Items.Add(p);
-        if (all.Count == 0) _printer.Items.Add(NoPrinter);
-        var current = Printers.For(Bank);
-        _printer.SelectedItem = all.Contains(current) ? current : _printer.Items[0];
-        _printer.EndUpdate();
-        _fillingPrinters = false;
-        ShowPrinterWarning();
-    }
-
-    void ShowPrinterWarning() =>
-        _printerWarn.Visible = _printer.SelectedItem is string p && Printers.IsFileOnly(p);
 
     void RefreshPayeeList()
     {
@@ -516,23 +488,14 @@ public class MainForm : Form
         var data = CurrentData();
         if (!ValidateCheque(data)) return;
         var text = ChequeText.Build(data, Bank, _store.Data.Settings);
-        var printer = Printers.For(Bank);
-        if (!Printers.Ready(this, printer, realCheque: true)) { _printer.Focus(); _printer.DroppedDown = true; return; }
 
         if (_store.Data.Settings.ConfirmBeforePrint && MessageBox.Show(this,
-                $"Cheque No.: {data.ChequeNo}\nDate: {text.Date}\nPay to: {data.Payee.Trim()}\nAmount: AED {AmountInWords.Figures(data.Amount)}\n{text.Words}\n\n" +
-                $"Printer: {printer}\n\nPut the cheque in the printer and click OK.",
+                $"Cheque No.: {data.ChequeNo}\nDate: {text.Date}\nPay to: {data.Payee.Trim()}\nAmount: AED {AmountInWords.Figures(data.Amount)}\n{text.Words}\n\nPut the cheque in the printer and click OK.",
                 "Print cheque", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK) return;
 
-        // straight to the chosen printer: no Windows print dialog
+        // the print popup: choose the printer, then print
         using var doc = ChequePrinter.Create(Bank, data, _store.Data.Settings, testPrint: false);
-
-        try { doc.Print(); }
-        catch (Exception ex)
-        {
-            MessageBox.Show(this, "Printing failed:\n" + ex.Message, "Print", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
+        if (!ChequePrinter.PrintWithDialog(this, doc, Bank)) return;
 
         _store.Data.Cheques.Add(new ChequeRecord
         {
@@ -576,10 +539,8 @@ public class MainForm : Form
         var data = CurrentData();
         if (data.Payee.Trim().Length == 0) data.Payee = "Sample Payee Trading LLC";
         if (data.Amount <= 0) data.Amount = 1354.50m;
-        if (!Printers.Ready(this, Printers.For(Bank), realCheque: false)) return;
         using var doc = ChequePrinter.Create(Bank, data, _store.Data.Settings, testPrint: true);
-        try { doc.Print(); }
-        catch (Exception ex) { MessageBox.Show(this, "Printing failed:\n" + ex.Message, "Print", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        if (ChequePrinter.PrintWithDialog(this, doc, Bank)) Save();
     }
 
     void ClearEntry()
