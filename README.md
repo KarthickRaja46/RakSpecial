@@ -73,8 +73,8 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
   <tr>
     <td width="33%" valign="top">
       <h3>📊 Live analytics</h3>
-      Total paid by month and by payee, cheques awaiting clearing, bounced cheques, and the post-dated cheques coming up,
-      with charts. Every table exports to Excel.
+      Total paid by month, payee and category (Rent, Supplier, Salary...), cheques awaiting clearing, bounced cheques,
+      and the post-dated cheques coming up, with charts. Every table exports to Excel.
     </td>
     <td width="33%" valign="top">
       <h3>🗂️ Register &amp; status</h3>
@@ -128,12 +128,15 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
 - **Summary cards**: total paid, average and largest cheque, top payee, awaiting clearing, bounced or stopped, due in the next 30 days.
 - **By month**: chart and table with the change from the previous month; post-dated months shown lighter.
 - **By payee**: cheques, total, share, average, largest and bounces, with a monthly chart per payee.
+- **By category**: totals per payee category (Rent, Supplier, Salary, Utility, Government, Loan, or your own), with a chart.
 - **Upcoming post-dated cheques**: due in the next 30, 90 or 365 days.
-- Filter by period and cheque book. Every table exports to Excel.
+- **Cheques**: every cheque in the period; **remove** test prints or mistakes from analytics (they stay in the register)
+  and put them back at any time.
+- Filter by period, cheque book and category. Every table exports to Excel.
 
 ### Everyday use
 - Modern workspace: form on the left, live preview on the right, this month's figures always in view.
-- **Payee list** with auto-complete; new payees are saved automatically.
+- **Payee list** with auto-complete, plus each payee's **category, phone and email**; new payees are saved automatically.
 - **Help & support** window (F1): email, WhatsApp, problem reports.
 - **Automatic updates**: when a new version is out, an *Update available* window opens at start. **Update now**
   downloads it, installs it and reopens RAK Special by itself (can be turned off in *Tools → Settings*).

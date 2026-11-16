@@ -15,6 +15,8 @@ public record MonthTotal(int Year, int Month, int Count, decimal Total)
 public record PayeeTotal(string Payee, int Count, decimal Total, decimal Share, decimal Average, decimal Largest,
                          DateTime LastDate, int Bounced);
 
+public record CategoryTotal(string Category, int Count, decimal Total, decimal Share, decimal Average);
+
 public record AnalyticsSummary(int Cheques, decimal Total, decimal Average, decimal Largest,
                                int Void, int Bounced, decimal BouncedAmount, int Stopped, decimal StoppedAmount,
                                int Uncleared, decimal UnclearedAmount);
@@ -46,9 +48,12 @@ public static class Analytics
                         (to == null || r.ChequeDate.Date <= to.Value.Date) &&
                         (string.IsNullOrEmpty(bankId) || r.BankId == bankId));
 
+    /// <summary>Cheques that take part in analytics: everything except those the user removed.</summary>
+    public static IEnumerable<ChequeRecord> Counted(IEnumerable<ChequeRecord> rows) => rows.Where(r => !r.ExcludedFromAnalytics);
+
     public static AnalyticsSummary Summarize(IEnumerable<ChequeRecord> rows, DateTime today)
     {
-        var all = rows.ToList();
+        var all = Counted(rows).ToList();
         var paid = all.Where(r => r.Status.CountsAsPaid()).ToList();
         var total = paid.Sum(r => r.Amount);
         var bounced = all.Where(r => r.Status == ChequeStatus.Bounced).ToList();
@@ -67,7 +72,7 @@ public static class Analytics
     /// </summary>
     public static List<MonthTotal> ByMonth(IEnumerable<ChequeRecord> rows, DateTime? from = null, DateTime? to = null)
     {
-        var paid = rows.Where(r => r.Status.CountsAsPaid()).ToList();
+        var paid = Counted(rows).Where(r => r.Status.CountsAsPaid()).ToList();
         if (paid.Count == 0 && (from == null || to == null)) return new();
         var first = from ?? paid.Min(r => r.ChequeDate);
         var last = to ?? paid.Max(r => r.ChequeDate);
@@ -88,7 +93,7 @@ public static class Analytics
     /// </summary>
     public static List<PayeeTotal> ByPayee(IEnumerable<ChequeRecord> rows)
     {
-        var all = rows.ToList();
+        var all = Counted(rows).ToList();
         var grandTotal = all.Where(r => r.Status.CountsAsPaid()).Sum(r => r.Amount);
         return all.GroupBy(r => PayeeKey(r.Payee))
             .Select(g =>
@@ -113,8 +118,23 @@ public static class Analytics
 
     /// <summary>Post-dated cheques still to be paid: Printed, dated after today (and within <paramref name="days"/>), soonest first.</summary>
     public static List<ChequeRecord> Upcoming(IEnumerable<ChequeRecord> rows, DateTime today, int? days = null) =>
-        rows.Where(r => r.Status == ChequeStatus.Printed && r.ChequeDate.Date > today.Date &&
+        Counted(rows).Where(r => r.Status == ChequeStatus.Printed && r.ChequeDate.Date > today.Date &&
                         (days == null || r.ChequeDate.Date <= today.Date.AddDays(days.Value)))
             .OrderBy(r => r.ChequeDate).ThenBy(r => r.ChequeNo, StringComparer.OrdinalIgnoreCase)
             .ToList();
+
+    /// <summary>Paid totals per payee category, largest first. <paramref name="categoryOf"/> maps a payee name to its category.</summary>
+    public static List<CategoryTotal> ByCategory(IEnumerable<ChequeRecord> rows, Func<string, string> categoryOf)
+    {
+        var paid = Counted(rows).Where(r => r.Status.CountsAsPaid()).ToList();
+        var grand = paid.Sum(r => r.Amount);
+        return paid.GroupBy(r => categoryOf(r.Payee), StringComparer.OrdinalIgnoreCase)
+            .Select(g =>
+            {
+                var total = g.Sum(r => r.Amount);
+                return new CategoryTotal(g.Key, g.Count(), total, grand == 0 ? 0 : total / grand, Math.Round(total / g.Count(), 2));
+            })
+            .OrderByDescending(c => c.Total).ThenBy(c => c.Category, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
 }

@@ -130,6 +130,91 @@ public class AnalyticsTests
     }
 }
 
+public class CategoryAndRemoveTests
+{
+    static readonly DateTime Today = new(2026, 11, 16);
+
+    static ChequeRecord C(string payee, decimal amount, int day, ChequeStatus status = ChequeStatus.Printed, bool removed = false) =>
+        new() { Payee = payee, Amount = amount, ChequeDate = new DateTime(2026, 11, day), Status = status, ExcludedFromAnalytics = removed };
+
+    static AppData Data() => new()
+    {
+        Payees =
+        {
+            new Payee { Name = "Al Noor Properties LLC", Category = "Rent" },
+            new Payee { Name = "Metro Utilities", Category = "Utility" },
+            new Payee { Name = "Gulf Logistics", Category = "Supplier" },
+        },
+    };
+
+    [Fact]
+    public void Category_of_a_payee_ignores_case_and_spaces()
+    {
+        var d = Data();
+        Assert.Equal("Rent", d.CategoryOf("AL NOOR  PROPERTIES llc"));
+        Assert.Equal(PayeeCategories.None, d.CategoryOf("Someone New"));
+    }
+
+    [Fact]
+    public void Totals_per_category_count_only_paid_cheques()
+    {
+        var d = Data();
+        var rows = new[]
+        {
+            C("Al Noor Properties LLC", 6000, 1),
+            C("Al Noor Properties LLC", 6000, 2, ChequeStatus.Cleared),
+            C("Metro Utilities", 1000, 3),
+            C("Metro Utilities", 500, 4, ChequeStatus.Bounced),
+            C("Someone New", 800, 5),
+        };
+        var cats = Analytics.ByCategory(rows, d.CategoryOf);
+        Assert.Equal(new[] { "Rent", "Utility", PayeeCategories.None }, cats.Select(c => c.Category));
+        Assert.Equal(new[] { 12000m, 1000m, 800m }, cats.Select(c => c.Total));
+        Assert.Equal(12000m / 13800m, cats[0].Share);
+        Assert.Equal(2, cats[0].Count);
+    }
+
+    [Fact]
+    public void Removed_cheques_are_left_out_of_every_analysis()
+    {
+        var d = Data();
+        var rows = new[]
+        {
+            C("Metro Utilities", 1000, 3),
+            C("Metro Utilities", 99999, 4, removed: true),       // a test print
+            C("Gulf Logistics", 5000, 28, removed: true),          // post-dated, removed
+            C("Gulf Logistics", 2000, 29),                         // post-dated
+        };
+        Assert.Equal(3000m, Analytics.Summarize(rows, Today).Total);
+        Assert.Equal(3000m, Analytics.ByMonth(rows).Sum(m => m.Total));
+        Assert.Equal(new[] { 2000m, 1000m }, Analytics.ByPayee(rows).Select(p => p.Total));
+        Assert.Equal(new[] { 2000m }, Analytics.Upcoming(rows, Today).Select(r => r.Amount));
+        Assert.Equal(3000m, Analytics.ByCategory(rows, d.CategoryOf).Sum(c => c.Total));
+    }
+
+    [Fact]
+    public void Payee_details_and_removed_flag_are_saved()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"rs-cat-{Guid.NewGuid():N}.json");
+        try
+        {
+            var store = new DataStore(path);
+            store.Data.Payees.Add(new Payee { Name = "Al Noor", Category = "Rent", Phone = "+971 50 000 0000", Email = "a@b.c" });
+            store.Data.Cheques.Add(C("Al Noor", 10, 1, removed: true));
+            store.Save();
+            var back = new DataStore(path).Data;
+            var p = back.Payees.Single(x => x.Name == "Al Noor");
+            Assert.Equal(("Rent", "+971 50 000 0000", "a@b.c"), (p.Category, p.Phone, p.Email));
+            Assert.True(back.Cheques.Single().ExcludedFromAnalytics);
+        }
+        finally
+        {
+            File.Delete(path);
+            File.Delete(path + ".bak");
+        }
+    }
+}
+
 public class ChequePositionTests
 {
     [Fact]

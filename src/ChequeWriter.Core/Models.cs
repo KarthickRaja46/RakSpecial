@@ -218,13 +218,31 @@ public class ChequeRecord
     public ChequeStatus Status { get; set; } = ChequeStatus.Printed;
     public DateTime PrintedAt { get; set; } = DateTime.Now;
     public string Notes { get; set; } = "";
+
+    /// <summary>Removed from analytics by the user (e.g. a test print). Stays in the register.</summary>
+    public bool ExcludedFromAnalytics { get; set; }
 }
 
 public class Payee
 {
     public string Name { get; set; } = "";
+    /// <summary>Rent, Supplier, Salary... (empty = not set). Used to group analytics.</summary>
+    public string Category { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Email { get; set; } = "";
     public string Notes { get; set; } = "";
     public override string ToString() => Name;
+}
+
+public static class PayeeCategories
+{
+    public const string None = "Uncategorised";
+    public static readonly string[] Defaults = { "Rent", "Supplier", "Salary", "Utility", "Government", "Loan", "Other" };
+
+    /// <summary>The default categories plus any the user typed, in a stable order.</summary>
+    public static List<string> All(IEnumerable<Payee> payees) =>
+        Defaults.Concat(payees.Select(p => p.Category.Trim()).Where(c => c.Length > 0))
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 }
 
 /// <summary>How amounts and names are written. Shared by all banks.</summary>
@@ -274,4 +292,11 @@ public class AppData
     public List<ChequeRecord> Cheques { get; set; } = new();
 
     [JsonIgnore] public BankLayout? LastBank => Banks.FirstOrDefault(b => b.Id == Settings.LastBankId) ?? Banks.FirstOrDefault();
+
+    /// <summary>The saved payee with this name (ignoring case and extra spaces), or null.</summary>
+    public Payee? FindPayee(string name) => Payees.FirstOrDefault(p => Analytics.SamePayee(p.Name, name));
+
+    /// <summary>The category of a payee name, or <see cref="PayeeCategories.None"/>.</summary>
+    public string CategoryOf(string payeeName) =>
+        FindPayee(payeeName)?.Category is { Length: > 0 } c ? c.Trim() : PayeeCategories.None;
 }
