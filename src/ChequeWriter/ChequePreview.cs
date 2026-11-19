@@ -70,6 +70,8 @@ public class ChequePreview : Control
         if (_bank == null) return;
         var g = e.Graphics;
         g.PageUnit = GraphicsUnit.Pixel;
+        g.InterpolationMode = InterpolationMode.HighQualityBicubic;   // the picture is shrunk a lot: keep it sharp
+        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
         var o = Origin; var s = Scale_;
 
         // paper-white cheque area with a soft shadow

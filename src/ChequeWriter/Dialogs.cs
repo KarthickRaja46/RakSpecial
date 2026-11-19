@@ -53,11 +53,14 @@ public static class Prompt
             MinimizeBox = false, MaximizeBox = false, StartPosition = FormStartPosition.CenterParent,
             ClientSize = new Size(420, 110), ShowIcon = false,
         };
-        var l = new Label { Text = label, Left = 12, Top = 12, AutoSize = true };
-        var t = new TextBox { Left = 12, Top = 36, Width = 396, Text = value };
-        var ok = new Button { Text = "OK", Left = 252, Top = 72, Width = 75, DialogResult = DialogResult.OK };
-        var cancel = new Button { Text = "Cancel", Left = 333, Top = 72, Width = 75, DialogResult = DialogResult.Cancel };
-        f.Controls.AddRange(new Control[] { l, t, ok, cancel });
+        var l = new Label { Text = label, Left = 12, Top = 12, AutoSize = true, MaximumSize = new Size(396, 0) };
+        f.Controls.Add(l);
+        var labelH = TextRenderer.MeasureText(label, f.Font, new Size(396, 0), TextFormatFlags.WordBreak).Height;
+        var t = new TextBox { Left = 12, Top = 12 + labelH + 8, Width = 396, Text = value };
+        var ok = new Button { Text = "OK", Left = 252, Top = t.Bottom + 12, Width = 75, DialogResult = DialogResult.OK };
+        var cancel = new Button { Text = "Cancel", Left = 333, Top = t.Bottom + 12, Width = 75, DialogResult = DialogResult.Cancel };
+        f.ClientSize = new Size(420, ok.Bottom + 12);
+        f.Controls.AddRange(new Control[] { t, ok, cancel });
         f.AcceptButton = ok; f.CancelButton = cancel;
         return f.ShowDialog(owner) == DialogResult.OK ? t.Text : null;
     }

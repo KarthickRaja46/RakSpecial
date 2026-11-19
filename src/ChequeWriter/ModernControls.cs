@@ -2,7 +2,7 @@ using System.Drawing.Drawing2D;
 
 namespace ChequeWriter;
 
-public enum ButtonKind { Primary, Secondary, Ghost, OnNavy }
+public enum ButtonKind { Primary, Secondary, Ghost, OnNavy, Danger }
 
 /// <summary>Rounded flat button with an optional icon (<see cref="Theme.Glyph"/>) and a shortcut hint on the right.</summary>
 public class RoundButton : Button
@@ -50,6 +50,7 @@ public class RoundButton : Button
             ButtonKind.Primary => (_down ? Theme.GoldDark : _hover ? Theme.GoldHover : Theme.Gold, Color.Empty, Theme.Navy),
             ButtonKind.Ghost => (_down ? Theme.Border : _hover ? Theme.Canvas : Color.Empty, Color.Empty, Theme.Muted),
             ButtonKind.OnNavy => (_down ? Theme.Navy3 : _hover ? Theme.Navy2 : Color.Empty, Color.Empty, Color.White),
+            ButtonKind.Danger => (_down ? Theme.DangerSoft2 : _hover ? Theme.DangerSoft : Theme.Card, Theme.DangerBorder, Theme.Danger),
             _ => (_down ? Theme.Border : _hover ? Theme.Canvas : Theme.Card, _hover ? Theme.BorderStrong : Theme.Border, Theme.Text),
         };
         if (!Enabled) { fore = Theme.Muted; if (Kind == ButtonKind.Primary) fill = Theme.Border; }
@@ -354,18 +355,17 @@ public class SegmentedControl : Control
 /// <summary>Small clickable figure: caption, big value, one line underneath.</summary>
 public class StatTile : Card
 {
-    readonly Label _caption = new() { AutoSize = false, Dock = DockStyle.Top, Font = Theme.Ui(8.5f), ForeColor = Theme.Muted };
-    readonly Label _value = new() { AutoSize = false, Dock = DockStyle.Top, Font = Theme.Ui(13.5f, FontStyle.Bold), ForeColor = Theme.Text, AutoEllipsis = true };
-    readonly Label _sub = new() { AutoSize = false, Dock = DockStyle.Fill, Font = Theme.Ui(8.5f), ForeColor = Theme.Muted, AutoEllipsis = true };
+    readonly Label _caption = new() { AutoSize = false, Dock = DockStyle.Top, Font = Theme.Semibold(9f), ForeColor = Theme.TextSoft };
+    readonly Label _value = new() { AutoSize = false, Dock = DockStyle.Top, Font = Theme.Ui(15f, FontStyle.Bold), ForeColor = Theme.Text, AutoEllipsis = true };
+    readonly Label _sub = new() { AutoSize = false, Dock = DockStyle.Fill, Font = Theme.Ui(9.5f), ForeColor = Theme.TextSoft, AutoEllipsis = true };
 
     public StatTile(string caption)
     {
         Hoverable = true;
         Cursor = Cursors.Hand;
-        Padding = new Padding(14, 10, 10, 8);
         _caption.Text = caption.ToUpperInvariant();
-        _caption.Height = _caption.Font.Height + 4;
-        _value.Height = _value.Font.Height + 4;
+        _caption.Height = _caption.Font.Height + 2;
+        _value.Height = _value.Font.Height + 2;
         Controls.Add(_sub);
         Controls.Add(_value);
         Controls.Add(_caption);

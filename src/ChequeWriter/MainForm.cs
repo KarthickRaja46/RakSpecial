@@ -28,6 +28,14 @@ public class MainForm : Form
     readonly StatTile _statNext = new("Next post-dated cheque");
     readonly ToolStripStatusLabel _status = new() { Spring = true, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Theme.Muted };
 
+    // the "Last cheque printed" card under the preview
+    readonly Label _lastCaption = new() { AutoSize = false, Dock = DockStyle.Top, Font = Theme.Semibold(9f), ForeColor = Theme.TextSoft, BackColor = Theme.Card, AutoEllipsis = true };
+    readonly Label _lastMain = new() { AutoSize = false, Dock = DockStyle.Top, Font = Theme.Semibold(12f), ForeColor = Theme.Text, BackColor = Theme.Card, AutoEllipsis = true };
+    readonly Label _lastSub = new() { AutoSize = false, Dock = DockStyle.Fill, Font = Theme.Ui(9.5f), ForeColor = Theme.TextSoft, BackColor = Theme.Card, AutoEllipsis = true };
+    readonly RoundButton _lastVoid = new() { Text = "Void", Glyph = Theme.Glyph.Void, Kind = ButtonKind.Danger, TabStop = false };
+    readonly Font _mainFont = Theme.Semibold(12f), _mainVoidFont = new("Segoe UI Semibold", 12f, FontStyle.Strikeout);
+    ChequeRecord? _last;
+
     public MainForm(DataStore store)
     {
         _store = store;
@@ -36,8 +44,12 @@ public class MainForm : Form
         Theme.TitleBar(this);
         Font = new Font("Segoe UI", 10f);
         MinimumSize = new Size(S(1060), S(720));
-        Size = new Size(S(1280), S(820));
+        // never bigger than the screen (small laptop screens cut off the bottom otherwise)
+        var screen = Screen.FromPoint(Cursor.Position).WorkingArea;
+        MinimumSize = new Size(Math.Min(MinimumSize.Width, screen.Width), Math.Min(MinimumSize.Height, screen.Height));
+        Size = new Size(Math.Min(S(1280), screen.Width), Math.Min(S(820), screen.Height));
         StartPosition = FormStartPosition.CenterScreen;
+        if (screen.Height < S(820)) WindowState = FormWindowState.Maximized;
         KeyPreview = true;
 
         BuildLayout();
@@ -306,12 +318,16 @@ public class MainForm : Form
         var test = new RoundButton { Text = "Test print", Glyph = Theme.Glyph.Page, Dock = DockStyle.Fill, Margin = new Padding(S(6), S(8), 0, 0) };
         test.Click += (_, _) => TestPrint();
         _tips.SetToolTip(test, "Print on plain paper with the cheque picture, to check alignment");
-        var clear = new RoundButton { Text = "Clear form", Glyph = Theme.Glyph.Clear, Kind = ButtonKind.Ghost, Dock = DockStyle.Fill, Font = Theme.Ui(9.5f), Margin = new Padding(0, S(6), 0, 0) };
+        var voidNo = new RoundButton { Text = "Void cheque", Glyph = Theme.Glyph.Void, Kind = ButtonKind.Danger, Dock = DockStyle.Fill, Font = Theme.Ui(9.5f), Margin = new Padding(0, S(8), S(6), 0) };
+        voidNo.Click += (_, _) => VoidFormCheque();
+        _tips.SetToolTip(voidNo, "Mark the cheque number in the form as Void (spoilt, torn or cancelled)");
+        var clear = new RoundButton { Text = "Clear form", Glyph = Theme.Glyph.Clear, Kind = ButtonKind.Ghost, Dock = DockStyle.Fill, Font = Theme.Ui(9.5f), Margin = new Padding(S(6), S(8), 0, 0) };
         clear.Click += (_, _) => ClearEntry();
         buttons.Controls.Add(print, 0, 0); buttons.SetColumnSpan(print, 2);
         buttons.Controls.Add(preview, 0, 1);
         buttons.Controls.Add(test, 1, 1);
-        buttons.Controls.Add(clear, 0, 2); buttons.SetColumnSpan(clear, 2);
+        buttons.Controls.Add(voidNo, 0, 2);
+        buttons.Controls.Add(clear, 1, 2);
 
         formCard.Controls.Add(fields);
         formCard.Controls.Add(buttons);
@@ -329,11 +345,36 @@ public class MainForm : Form
         previewCard.Controls.Add(_preview);
         previewCard.Controls.Add(previewHead);
 
-        var stats = new TableLayoutPanel { Dock = DockStyle.Bottom, Height = S(96), ColumnCount = 3, BackColor = Theme.Canvas, Padding = new Padding(0, S(14), 0, 0) };
+        // last cheque printed (this cheque book), with Void
+        var lastWrap = new Panel { Dock = DockStyle.Bottom, Height = S(94), BackColor = Theme.Canvas, Padding = new Padding(0, S(14), 0, 0) };
+        var lastCard = new Card { Dock = DockStyle.Fill, Padding = new Padding(S(16), S(8), S(12), S(8)) };
+        _lastCaption.Height = _lastCaption.Font.Height + 2;
+        _lastMain.Height = _lastMain.Font.Height + 4;
+        var lastText = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Card };
+        lastText.Controls.Add(_lastSub);
+        lastText.Controls.Add(_lastMain);
+        lastText.Controls.Add(_lastCaption);
+        var lastButtons = new FlowLayoutPanel { Dock = DockStyle.Right, AutoSize = true, WrapContents = false, BackColor = Theme.Card, Padding = new Padding(S(10), S(11), 0, 0) };
+        _lastVoid.Font = Theme.Semibold(10f);
+        _lastVoid.Height = S(40);
+        _lastVoid.Margin = new Padding(0, 0, S(8), 0);
+        _lastVoid.Click += (_, _) => VoidLastCheque();
+        _tips.SetToolTip(_lastVoid, "Cancel this cheque: it stays in the register as Void and leaves the totals");
+        var openRegister = new RoundButton { Text = "Register", Glyph = Theme.Glyph.Register, Font = Theme.Semibold(10f), Height = S(40), Margin = new Padding(0), TabStop = false };
+        openRegister.Width = openRegister.GetPreferredSize(Size.Empty).Width;
+        openRegister.Click += (_, _) => ShowRegister();
+        lastButtons.Controls.Add(_lastVoid);
+        lastButtons.Controls.Add(openRegister);
+        lastCard.Controls.Add(lastText);
+        lastCard.Controls.Add(lastButtons);
+        lastWrap.Controls.Add(lastCard);
+
+        var stats = new TableLayoutPanel { Dock = DockStyle.Bottom, Height = S(110), ColumnCount = 3, BackColor = Theme.Canvas, Padding = new Padding(0, S(14), 0, 0) };
         for (var i = 0; i < 3; i++) stats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3f));
         foreach (var (tile, col) in new[] { (_statMonth, 0), (_statUncleared, 1), (_statNext, 2) })
         {
             tile.Dock = DockStyle.Fill;
+            tile.Padding = new Padding(S(16), S(10), S(12), S(8));
             tile.Margin = new Padding(col == 0 ? 0 : S(7), 0, col == 2 ? 0 : S(7), 0);
             tile.Click += (_, _) => ShowAnalytics();
             _tips.SetToolTip(tile, "Open analytics");
@@ -341,6 +382,7 @@ public class MainForm : Form
         }
 
         right.Controls.Add(previewCard);
+        right.Controls.Add(lastWrap);
         right.Controls.Add(stats);
 
         body.Controls.Add(right);
@@ -431,7 +473,60 @@ public class MainForm : Form
             ? "Amount in words is too long for the two lines on the cheque. Make the font smaller in the layout editor."
             : $"{n:#,##0} {(n == 1 ? "cheque" : "cheques")} in the register   ·   Cheque book: {Bank.Name}";
         RefreshStats();
+        RefreshLastCheque();
     }
+
+    /// <summary>The newest cheque printed from this cheque book (blank leaves that were voided are skipped).</summary>
+    void RefreshLastCheque()
+    {
+        _last = _store.Data.Cheques
+            .Where(c => c.BankId == Bank.Id && c.Payee.Trim().Length > 0)
+            .OrderByDescending(c => c.PrintedAt)
+            .FirstOrDefault();
+        _lastCaption.Text = "LAST CHEQUE PRINTED";
+
+        if (_last is not { } r)
+        {
+            _lastMain.Text = "Nothing printed from this cheque book yet";
+            _lastMain.Font = _mainFont;
+            _lastMain.ForeColor = Theme.TextSoft;
+            _lastSub.Text = "Your last cheque shows here after printing, so you can void it if it went wrong.";
+            SetVoidButton(undo: false, enabled: false);
+            return;
+        }
+
+        var isVoid = r.Status == ChequeStatus.Void;
+        var no = r.ChequeNo.Length > 0 ? $"No. {r.ChequeNo}" : "No number";
+        _lastMain.Text = $"{no}    AED {AmountInWords.Figures(r.Amount)}    {r.Payee}";
+        _lastMain.Font = isVoid ? _mainVoidFont : _mainFont;
+        _lastMain.ForeColor = isVoid ? Theme.Muted : Theme.Text;
+        var status = r.Status switch
+        {
+            ChequeStatus.Void => "VOID",
+            ChequeStatus.Cleared => "Cleared",
+            ChequeStatus.Bounced => "Bounced",
+            ChequeStatus.Stopped => "Stopped",
+            _ => "Printed",
+        };
+        _lastSub.Text = $"{status}   ·   Cheque date {r.ChequeDate:dd-MM-yyyy}   ·   printed {When(r.PrintedAt)}";
+        _lastSub.ForeColor = isVoid ? Theme.Danger : Theme.TextSoft;
+        SetVoidButton(undo: isVoid, enabled: true);
+    }
+
+    void SetVoidButton(bool undo, bool enabled)
+    {
+        _lastVoid.Text = undo ? "Undo void" : "Void";
+        _lastVoid.Glyph = undo ? Theme.Glyph.Undo : Theme.Glyph.Void;
+        _lastVoid.Kind = undo ? ButtonKind.Secondary : ButtonKind.Danger;
+        _lastVoid.Enabled = enabled;
+        _lastVoid.Width = Math.Max(S(96), _lastVoid.GetPreferredSize(Size.Empty).Width);
+        _lastVoid.Invalidate();
+    }
+
+    static string When(DateTime t) =>
+        t.Date == DateTime.Today ? $"today at {t:HH:mm}"
+        : t.Date == DateTime.Today.AddDays(-1) ? $"yesterday at {t:HH:mm}"
+        : $"{t:dd-MM-yyyy} at {t:HH:mm}";
 
     /// <summary>The three figures under the preview (all cheque books).</summary>
     void RefreshStats()
@@ -541,6 +636,90 @@ public class MainForm : Form
         if (data.Amount <= 0) data.Amount = 1354.50m;
         using var doc = ChequePrinter.Create(Bank, data, _store.Data.Settings, testPrint: true);
         if (ChequePrinter.PrintWithDialog(this, doc, Bank)) Save();
+    }
+
+    // ---------------- void ----------------
+
+    /// <summary>The Void / Undo void button on the "Last cheque printed" card.</summary>
+    void VoidLastCheque()
+    {
+        if (_last is not { } r) return;
+        if (r.Status == ChequeStatus.Void)
+        {
+            if (MessageBox.Show(this, $"Cheque No. {r.ChequeNo} for {r.Payee} is marked Void.\n\nMark it as Printed again?",
+                    "Undo void", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            r.Status = ChequeStatus.Printed;
+            Save();
+            UpdatePreview();
+            return;
+        }
+        VoidRecord(r);
+    }
+
+    /// <summary>
+    /// The "Void cheque" button under the form. If the number in Cheque No. was printed, that cheque is voided;
+    /// otherwise the blank leaf is recorded as Void and the form moves on to the next number.
+    /// </summary>
+    void VoidFormCheque()
+    {
+        var no = _chequeNo.Text.Trim();
+        if (no.Length == 0)
+        {
+            MessageBox.Show(this, "Type the number of the cheque to void in Cheque No.", "Void cheque", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            _chequeNo.Focus();
+            return;
+        }
+
+        var sameNo = _store.Data.Cheques.Where(c => c.BankId == Bank.Id && c.ChequeNo == no).OrderByDescending(c => c.PrintedAt).ToList();
+        var printed = sameNo.FirstOrDefault(c => c.Status.UsesNumber());
+        if (printed != null) { VoidRecord(printed); return; }
+        if (sameNo.Count > 0)
+        {
+            MessageBox.Show(this, $"Cheque No. {no} is already void.", "Void cheque", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        var reason = Prompt.Show(this, "Void cheque",
+            $"Cheque No. {no} has not been printed.\nRecord this blank cheque leaf as Void (spoilt, torn or cancelled)?\n\nReason (optional, saved in Notes):",
+            "Spoilt leaf");
+        if (reason == null) return;
+        _store.Data.Cheques.Add(new ChequeRecord
+        {
+            ChequeNo = no, BankId = Bank.Id, BankName = Bank.Name, ChequeDate = DateTime.Today,
+            Status = ChequeStatus.Void, Notes = reason.Trim().Length > 0 ? "Blank leaf: " + reason.Trim() : "Blank leaf",
+        });
+        if (no == Bank.NextChequeNo) Bank.NextChequeNo = DataStore.NextNumber(no);   // never move the book backwards
+        Save();
+        _chequeNo.Text = Bank.NextChequeNo;
+        UpdatePreview();
+    }
+
+    /// <summary>Marks a printed cheque Void (asks first), then offers to print the same cheque on the next leaf.</summary>
+    void VoidRecord(ChequeRecord r)
+    {
+        var reason = Prompt.Show(this, "Void cheque",
+            $"Void cheque No. {r.ChequeNo} for {r.Payee}, AED {AmountInWords.Figures(r.Amount)}?\n" +
+            "It stays in the cheque register as Void and is left out of all totals.\n\nReason (optional, saved in Notes):",
+            "Spoilt in printer");
+        if (reason == null) return;
+        r.Status = ChequeStatus.Void;
+        if (reason.Trim().Length > 0)
+            r.Notes = string.IsNullOrWhiteSpace(r.Notes) ? reason.Trim() : $"{r.Notes}; {reason.Trim()}";
+        Save();
+        UpdatePreview();
+
+        if (r.BankId != Bank.Id || r.Payee.Trim().Length == 0) return;
+        if (MessageBox.Show(this,
+                $"Cheque No. {r.ChequeNo} is now Void.\n\nPrint the same cheque again on the next leaf (No. {Bank.NextChequeNo})?\n" +
+                "The details are put back in the form. Check them, then click Print cheque.",
+                "Print again?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+        _chequeNo.Text = Bank.NextChequeNo;
+        _date.Value = r.ChequeDate;
+        _payee.Text = r.Payee;
+        _amount.Text = AmountInWords.Figures(r.Amount);
+        _acPayee.Checked = r.AcPayeeOnly;
+        UpdatePreview();
+        _amount.Focus();
     }
 
     void ClearEntry()

@@ -3,6 +3,13 @@
 Each section below becomes the release notes on GitHub and in the app's 'Update available' window.
 Write for the people who use the app: short, plain lines, one change per line.
 
+## 2.1.7
+- New 'Last cheque printed' card under the preview: number, amount, payee, date and status of your last cheque.
+- Void a cheque in one click: 'Void' on the last cheque, or 'Void cheque' under the form for any cheque number, including a spoilt blank leaf.
+- After voiding, RAK Special offers to print the same cheque again on the next leaf.
+- The figures under the preview are bigger and easier to read, and the cheque picture is sharper.
+- On smaller laptop screens the window now fits the screen instead of running off the bottom.
+
 ## 2.1.6
 - The 'Update available' window now always shows what's new in the update.
 - Release notes for every version are kept in one place, so each update explains itself.

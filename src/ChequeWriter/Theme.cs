@@ -1,4 +1,4 @@
-using System.Drawing.Drawing2D;
+﻿using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 
 namespace ChequeWriter;
@@ -24,6 +24,10 @@ public static class Theme
     public static readonly Color Muted = Color.FromArgb(107, 114, 128);
     public static readonly Color OnNavyMuted = Color.FromArgb(160, 166, 178);
     public static readonly Color Danger = Color.FromArgb(185, 28, 28);
+    public static readonly Color DangerSoft = Color.FromArgb(254, 242, 242);
+    public static readonly Color DangerSoft2 = Color.FromArgb(254, 226, 226);
+    public static readonly Color DangerBorder = Color.FromArgb(240, 180, 180);
+    public static readonly Color TextSoft = Color.FromArgb(75, 85, 99);       // secondary text that must stay readable
     public static readonly Color Warning = Color.FromArgb(180, 83, 9);
 
     public static Font Ui(float size, FontStyle style = FontStyle.Regular) => new("Segoe UI", size, style);
@@ -36,6 +40,7 @@ public static class Theme
 
     public static class Glyph
     {
+        public const string Void = "", Undo = "";
         public const string Print = "", Preview = "", Page = "", Clear = "",
             Register = "", Analytics = "", Calendar = "", People = "", Help = "";
     }
