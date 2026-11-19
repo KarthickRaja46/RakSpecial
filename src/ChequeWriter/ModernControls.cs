@@ -243,6 +243,9 @@ public class SegmentedControl : Control
 
     public event EventHandler? SelectedIndexChanged;
 
+    /// <summary>Light look for white panels: grey track, navy selected pill.</summary>
+    public bool Light { get; set; }
+
     public SegmentedControl()
     {
         SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer |
@@ -278,8 +281,11 @@ public class SegmentedControl : Control
     float S => DeviceDpi / 96f;
     int SegmentWidth(int i) => TextRenderer.MeasureText(_items[i], Font).Width + (int)(28 * S);
 
+    /// <summary>Height in 96-dpi pixels.</summary>
+    public int BaseHeight { get; set; } = 36;
+
     public override Size GetPreferredSize(Size proposedSize) =>
-        new(Enumerable.Range(0, _items.Count).Sum(SegmentWidth) + (int)(8 * S), (int)(36 * S));
+        new(Enumerable.Range(0, _items.Count).Sum(SegmentWidth) + (int)(8 * S), (int)(BaseHeight * S));
 
     int HitTest(int x)
     {
@@ -329,9 +335,9 @@ public class SegmentedControl : Control
         g.SmoothingMode = SmoothingMode.AntiAlias;
         using (var track = Theme.Round(new RectangleF(0.5f, 0.5f, Width - 1.5f, Height - 1.5f), Height / 2f))
         {
-            using var b = new SolidBrush(Theme.Navy2);
+            using var b = new SolidBrush(Light ? Theme.Canvas : Theme.Navy2);
             g.FillPath(b, track);
-            using var p = new Pen(Focused && ShowFocusCues ? Theme.Gold : Theme.Navy3);
+            using var p = new Pen(Focused && ShowFocusCues ? Theme.Gold : Light ? Theme.Border : Theme.Navy3);
             g.DrawPath(p, track);
         }
         var left = 4 * S;
@@ -342,10 +348,11 @@ public class SegmentedControl : Control
             if (i == _selected || i == _hover)
             {
                 using var path = Theme.Round(seg, seg.Height / 2);
-                using var b = new SolidBrush(i == _selected ? Theme.Gold : Theme.Navy3);
+                using var b = new SolidBrush(i == _selected ? (Light ? Theme.Navy : Theme.Gold) : (Light ? Theme.Border : Theme.Navy3));
                 g.FillPath(b, path);
             }
-            TextRenderer.DrawText(g, _items[i], Font, Rectangle.Round(seg), i == _selected ? Theme.Navy : Color.White,
+            var fore = Light ? (i == _selected ? Color.White : Theme.Text) : (i == _selected ? Theme.Navy : Color.White);
+            TextRenderer.DrawText(g, _items[i], Font, Rectangle.Round(seg), fore,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
             left += w;
         }

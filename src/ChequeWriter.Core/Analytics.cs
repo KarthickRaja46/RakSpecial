@@ -15,6 +15,14 @@ public record MonthTotal(int Year, int Month, int Count, decimal Total)
 public record PayeeTotal(string Payee, int Count, decimal Total, decimal Share, decimal Average, decimal Largest,
                          DateTime LastDate, int Bounced);
 
+public enum ChequeState { Cleared, AwaitingClearing, PostDated, Bounced, Stopped, Void }
+
+public record StatusSlice(ChequeState State, int Count, decimal Amount);
+
+public enum InsightKind { Info, Warning }
+
+public record Insight(string Text, InsightKind Kind);
+
 public record CategoryTotal(string Category, int Count, decimal Total, decimal Share, decimal Average);
 
 public record AnalyticsSummary(int Cheques, decimal Total, decimal Average, decimal Largest,
@@ -122,6 +130,127 @@ public static class Analytics
                         (days == null || r.ChequeDate.Date <= today.Date.AddDays(days.Value)))
             .OrderBy(r => r.ChequeDate).ThenBy(r => r.ChequeNo, StringComparer.OrdinalIgnoreCase)
             .ToList();
+
+    /// <summary>
+    /// The period just before from..to, of the same length: whole months when the range is whole months
+    /// (e.g. the 12 months before "last 12 months"), otherwise the same number of days.
+    /// </summary>
+    public static (DateTime From, DateTime To) PreviousRange(DateTime from, DateTime to)
+    {
+        from = from.Date; to = to.Date;
+        if (from.Day == 1 && to.AddDays(1).Day == 1)
+        {
+            var months = (to.Year - from.Year) * 12 + to.Month - from.Month + 1;
+            return (from.AddMonths(-months), from.AddDays(-1));
+        }
+        var days = (to - from).Days + 1;
+        return (from.AddDays(-days), from.AddDays(-1));
+    }
+
+    /// <summary>Change from <paramref name="before"/> to <paramref name="now"/> as a fraction (0.25 = 25% more), or null when there is nothing to compare with.</summary>
+    public static decimal? Change(decimal now, decimal before) => before == 0 ? null : (now - before) / before;
+
+    /// <summary>
+    /// Where the cheques stand: cleared, waiting to clear (due), post-dated (not due yet), bounced, stopped, void.
+    /// Removed cheques are left out.
+    /// </summary>
+    public static List<StatusSlice> ByStatus(IEnumerable<ChequeRecord> rows, DateTime today)
+    {
+        var all = Counted(rows).ToList();
+        StatusSlice S(ChequeState st, Func<ChequeRecord, bool> f)
+        {
+            var g = all.Where(f).ToList();
+            return new StatusSlice(st, g.Count, g.Sum(r => r.Amount));
+        }
+        return new()
+        {
+            S(ChequeState.Cleared, r => r.Status == ChequeStatus.Cleared),
+            S(ChequeState.AwaitingClearing, r => r.Status == ChequeStatus.Printed && r.ChequeDate.Date <= today.Date),
+            S(ChequeState.PostDated, r => r.Status == ChequeStatus.Printed && r.ChequeDate.Date > today.Date),
+            S(ChequeState.Bounced, r => r.Status == ChequeStatus.Bounced),
+            S(ChequeState.Stopped, r => r.Status == ChequeStatus.Stopped),
+            S(ChequeState.Void, r => r.Status == ChequeStatus.Void),
+        };
+    }
+
+    /// <summary>
+    /// Short plain-language findings for the "Good to know" panel. <paramref name="scope"/> is every cheque that
+    /// passes the cheque book / category filters (any date); from..to is the period (null = all time).
+    /// </summary>
+    public static List<Insight> Insights(IEnumerable<ChequeRecord> scope, DateTime? from, DateTime? to, DateTime today)
+    {
+        var all = Counted(scope).ToList();
+        var period = Filter(all, from, to).ToList();
+        var paid = period.Where(r => r.Status.CountsAsPaid()).ToList();
+        var list = new List<Insight>();
+        if (period.Count == 0)
+            list.Add(new Insight("No cheques in this period. Try a longer period, or All time.", InsightKind.Info));
+
+        var total = paid.Sum(r => r.Amount);
+        if (from != null && to != null && period.Count > 0)
+        {
+            var (pf, pt) = PreviousRange(from.Value, to.Value);
+            var before = Filter(all, pf, pt).Where(r => r.Status.CountsAsPaid()).Sum(r => r.Amount);
+            if (Change(total, before) is { } ch && Math.Abs(ch) >= 0.005m)
+                list.Add(new Insight(
+                    $"You paid {Aed(total)}, {Math.Abs(ch):0%} {(ch > 0 ? "more" : "less")} than in the period before ({Aed(before)}).",
+                    InsightKind.Info));
+            else if (before > 0)
+                list.Add(new Insight($"You paid {Aed(total)}, about the same as in the period before.", InsightKind.Info));
+        }
+
+        if (paid.Count > 0)
+        {
+            var big = paid.OrderByDescending(r => r.Amount).ThenBy(r => r.ChequeDate).First();
+            list.Add(new Insight($"Biggest cheque: {Aed(big.Amount)} to {big.Payee.Trim()} on {big.ChequeDate:dd MMM yyyy}.", InsightKind.Info));
+
+            var payees = ByPayee(period).Where(p => p.Total > 0).ToList();
+            if (payees.Count > 1)
+            {
+                var top = payees[0];
+                list.Add(new Insight($"{top.Payee} received {top.Share:0%} of all payments ({Aed(top.Total)} in {top.Count} {Plural(top.Count, "cheque")}).", InsightKind.Info));
+            }
+
+            var months = paid.GroupBy(r => new DateTime(r.ChequeDate.Year, r.ChequeDate.Month, 1)).ToList();
+            if (months.Count >= 2)
+            {
+                var busiest = months.OrderByDescending(g => g.Sum(r => r.Amount)).First();
+                list.Add(new Insight($"Busiest month: {busiest.Key.ToString("MMMM yyyy", CultureInfo.InvariantCulture)} with {Aed(busiest.Sum(r => r.Amount))}.", InsightKind.Info));
+            }
+
+            var regular = paid.GroupBy(r => PayeeKey(r.Payee))
+                .Select(g => (Name: g.OrderByDescending(r => r.ChequeDate).First().Payee.Trim(),
+                              Months: g.Select(r => (r.ChequeDate.Year, r.ChequeDate.Month)).Distinct().Count()))
+                .Where(x => x.Months >= 3).OrderByDescending(x => x.Months).Take(3).ToList();
+            if (regular.Count > 0)
+                list.Add(new Insight("Regular payments: " + string.Join(", ", regular.Select(x => $"{x.Name} ({x.Months} months)")) + ".", InsightKind.Info));
+        }
+
+        var bounced = period.Where(r => r.Status == ChequeStatus.Bounced).ToList();
+        if (bounced.Count > 0)
+            list.Add(new Insight($"{bounced.Count} {Plural(bounced.Count, "cheque")} bounced in this period ({Aed(bounced.Sum(r => r.Amount))}).", InsightKind.Warning));
+
+        // these look at every date, not only the period: they are about what to do now
+        var stale = all.Where(r => r.Status == ChequeStatus.Printed && r.ChequeDate.Date <= today.Date.AddDays(-14)).ToList();
+        if (stale.Count > 0)
+            list.Add(new Insight(
+                $"{stale.Count} {Plural(stale.Count, "cheque")} ({Aed(stale.Sum(r => r.Amount))}) dated over 2 weeks ago {(stale.Count == 1 ? "is" : "are")} not marked Cleared yet. Check the bank statement and set the status in the register.",
+                InsightKind.Warning));
+
+        var due = Upcoming(all, today, 30);
+        if (due.Count > 0)
+            list.Add(new Insight(
+                $"{Aed(due.Sum(r => r.Amount))} in post-dated cheques falls due in the next 30 days. Next: {Aed(due[0].Amount)} to {due[0].Payee.Trim()} on {due[0].ChequeDate:dd MMM}.",
+                InsightKind.Warning));
+
+        var voids = period.Count(r => r.Status == ChequeStatus.Void);
+        if (voids > 0)
+            list.Add(new Insight($"{voids} {Plural(voids, "cheque")} voided in this period.", InsightKind.Info));
+        return list;
+    }
+
+    static string Aed(decimal v) => "AED " + v.ToString("#,##0.00", CultureInfo.InvariantCulture);
+    static string Plural(int n, string word) => n == 1 ? word : word + "s";
 
     /// <summary>Paid totals per payee category, largest first. <paramref name="categoryOf"/> maps a payee name to its category.</summary>
     public static List<CategoryTotal> ByCategory(IEnumerable<ChequeRecord> rows, Func<string, string> categoryOf)

@@ -3,6 +3,13 @@
 Each section below becomes the release notes on GitHub and in the app's 'Update available' window.
 Write for the people who use the app: short, plain lines, one change per line.
 
+## 2.1.8
+- Analytics is redesigned: a clear Overview with money paid by month, top payees, a category chart and where your cheques stand.
+- New 'Good to know' panel: how this period compares with the one before, the biggest cheque, the busiest month, regular payments, cheques not yet cleared and post-dated cheques falling due.
+- Filters are buttons you can see at a glance: period, cheque book and category.
+- Hover any chart for the exact amount; click a month, a payee or a status to jump to its details.
+- Post-dated view shows how much falls due each month.
+
 ## 2.1.7
 - New 'Last cheque printed' card under the preview: number, amount, payee, date and status of your last cheque.
 - Void a cheque in one click: 'Void' on the last cheque, or 'Void cheque' under the form for any cheque number, including a spoilt blank leaf.

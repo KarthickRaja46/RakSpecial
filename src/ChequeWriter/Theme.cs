@@ -31,6 +31,34 @@ public static class Theme
     public static readonly Color Warning = Color.FromArgb(180, 83, 9);
 
     public static Font Ui(float size, FontStyle style = FontStyle.Regular) => new("Segoe UI", size, style);
+
+    /// <summary>Clean table look: no grid boxes, roomy rows, soft gold selection.</summary>
+    public static void StyleGrid(DataGridView g)
+    {
+        var s = g.DeviceDpi / 96f;
+        g.BackgroundColor = Card;
+        g.BorderStyle = BorderStyle.None;
+        g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+        g.GridColor = Color.FromArgb(236, 238, 241);
+        g.EnableHeadersVisualStyles = false;
+        g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+        g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+        g.ColumnHeadersHeight = (int)(36 * s);
+        g.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+        {
+            BackColor = Color.FromArgb(248, 249, 250), ForeColor = TextSoft, Font = Semibold(9f),
+            SelectionBackColor = Color.FromArgb(248, 249, 250), SelectionForeColor = TextSoft,
+            Padding = new Padding((int)(8 * s), 0, (int)(8 * s), 0),
+        };
+        g.DefaultCellStyle = new DataGridViewCellStyle
+        {
+            BackColor = Card, ForeColor = Text, Font = Ui(9.5f),
+            SelectionBackColor = GoldSoft, SelectionForeColor = Text,
+            Padding = new Padding((int)(8 * s), 0, (int)(8 * s), 0),
+        };
+        g.RowTemplate.Height = (int)(32 * s);
+        g.RowHeadersVisible = false;
+    }
     public static Font Semibold(float size) => new("Segoe UI Semibold", size);
 
     /// <summary>Windows 11 "Segoe Fluent Icons", or "Segoe MDL2 Assets" on Windows 10.</summary>
