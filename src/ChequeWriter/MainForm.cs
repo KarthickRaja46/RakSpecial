@@ -33,6 +33,7 @@ public class MainForm : Form
     readonly Label _lastMain = new() { AutoSize = false, Dock = DockStyle.Top, Font = Theme.Semibold(12f), ForeColor = Theme.Text, BackColor = Theme.Card, AutoEllipsis = true };
     readonly Label _lastSub = new() { AutoSize = false, Dock = DockStyle.Fill, Font = Theme.Ui(9.5f), ForeColor = Theme.TextSoft, BackColor = Theme.Card, AutoEllipsis = true };
     readonly RoundButton _lastVoid = new() { Text = "Void", Glyph = Theme.Glyph.Void, Kind = ButtonKind.Danger, TabStop = false };
+    readonly RoundButton _lastEdit = new() { Text = "Edit", Glyph = Theme.Glyph.Edit, TabStop = false };
     readonly Font _mainFont = Theme.Semibold(12f), _mainVoidFont = new("Segoe UI Semibold", 12f, FontStyle.Strikeout);
     ChequeRecord? _last;
 
@@ -360,10 +361,17 @@ public class MainForm : Form
         _lastVoid.Margin = new Padding(0, 0, S(8), 0);
         _lastVoid.Click += (_, _) => VoidLastCheque();
         _tips.SetToolTip(_lastVoid, "Cancel this cheque: it stays in the register as Void and leaves the totals");
+        _lastEdit.Font = Theme.Semibold(10f);
+        _lastEdit.Height = S(40);
+        _lastEdit.Margin = new Padding(0, 0, S(8), 0);
+        _lastEdit.Width = _lastEdit.GetPreferredSize(Size.Empty).Width;
+        _lastEdit.Click += (_, _) => EditLastCheque();
+        _tips.SetToolTip(_lastEdit, "Fix the amount, payee, date or number of this cheque, or delete it");
         var openRegister = new RoundButton { Text = "Register", Glyph = Theme.Glyph.Register, Font = Theme.Semibold(10f), Height = S(40), Margin = new Padding(0), TabStop = false };
         openRegister.Width = openRegister.GetPreferredSize(Size.Empty).Width;
         openRegister.Click += (_, _) => ShowRegister();
         lastButtons.Controls.Add(_lastVoid);
+        lastButtons.Controls.Add(_lastEdit);
         lastButtons.Controls.Add(openRegister);
         lastCard.Controls.Add(lastText);
         lastCard.Controls.Add(lastButtons);
@@ -427,11 +435,7 @@ public class MainForm : Form
 
     // ---------------- data from the form ----------------
 
-    bool TryAmount(out decimal amount)
-    {
-        var t = _amount.Text.Trim().Replace("AED", "", StringComparison.OrdinalIgnoreCase).Trim();
-        return decimal.TryParse(t, NumberStyles.Number, CultureInfo.InvariantCulture, out amount);
-    }
+    bool TryAmount(out decimal amount) => ChequeRecords.TryParseAmount(_amount.Text, out amount);
 
     ChequeData CurrentData()
     {
@@ -492,6 +496,7 @@ public class MainForm : Form
             _lastMain.ForeColor = Theme.TextSoft;
             _lastSub.Text = "Your last cheque shows here after printing, so you can void it if it went wrong.";
             SetVoidButton(undo: false, enabled: false);
+            _lastEdit.Enabled = false;
             return;
         }
 
@@ -511,6 +516,16 @@ public class MainForm : Form
         _lastSub.Text = $"{status}   ·   Cheque date {r.ChequeDate:dd-MM-yyyy}   ·   printed {When(r.PrintedAt)}";
         _lastSub.ForeColor = isVoid ? Theme.Danger : Theme.TextSoft;
         SetVoidButton(undo: isVoid, enabled: true);
+        _lastEdit.Enabled = true;
+    }
+
+    /// <summary>The Edit button on the "Last cheque printed" card: fix the cheque in the register, or delete it.</summary>
+    void EditLastCheque()
+    {
+        if (_last is not { } r) return;
+        using (var f = new EditChequeDialog(_store, r)) f.ShowDialog(this);
+        RefreshPayeeList();
+        UpdatePreview();
     }
 
     void SetVoidButton(bool undo, bool enabled)

@@ -79,13 +79,18 @@ public class RegisterForm : Form
         statusMenu.Items.Add("Bounced (returned unpaid)...", null, (_, _) => SetStatus(ChequeStatus.Bounced));
         statusMenu.Items.Add("Stopped (payment stopped)...", null, (_, _) => SetStatus(ChequeStatus.Stopped));
         statusMenu.Items.Add("Void (spoilt or cancelled)", null, (_, _) => SetStatus(ChequeStatus.Void));
+        statusMenu.Items.Add(new ToolStripSeparator());
+        statusMenu.Items.Add("Undo void (back to Printed)", null, (_, _) => UndoVoid());
         Button? statusButton = null;
         statusButton = B("Set status  ▾", (_, _) => statusMenu.Show(statusButton!, new Point(0, statusButton!.Height)));
 
         bar.Controls.Add(B("Load into form to reprint", (_, _) => Reprint()));
+        bar.Controls.Add(B("Edit cheque...", (_, _) => EditCheque()));
         bar.Controls.Add(statusButton);
+        bar.Controls.Add(B("Undo void", (_, _) => UndoVoid()));
         bar.Controls.Add(B("Edit note...", (_, _) => EditNote()));
         bar.Controls.Add(B("Delete", (_, _) => DeleteRow()));
+        bar.Controls.Add(B("Remove all void cheques...", (_, _) => RemoveAllVoid()));
         bar.Controls.Add(B("Export to Excel (CSV)...", (_, _) => Export()));
         var close = B("Close", (_, _) => Close());
         bar.Controls.Add(close);
@@ -180,12 +185,64 @@ public class RegisterForm : Form
         Persist();
     }
 
+    /// <summary>Opens the selected cheque to fix its number, date, payee, amount, status or notes (or delete it).</summary>
+    void EditCheque()
+    {
+        if (Current is not { } r)
+        {
+            MessageBox.Show(this, "Select a cheque in the list first.", "Edit cheque", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        using (var f = new EditChequeDialog(_store, r)) f.ShowDialog(this);
+        Reload();
+    }
+
+    void UndoVoid()
+    {
+        var voids = Selected.Where(r => r.Status == ChequeStatus.Void).ToList();
+        if (voids.Count == 0)
+        {
+            MessageBox.Show(this, "Select one or more Void cheques first.\nTip: choose 'Void' in the status filter to see only those.",
+                "Undo void", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        if (MessageBox.Show(this,
+                voids.Count == 1 ? $"Mark cheque {voids[0].ChequeNo} ({voids[0].Payee}) as Printed again?" : $"Mark these {voids.Count} void cheques as Printed again?",
+                "Undo void", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+        ChequeRecords.UndoVoid(voids);
+        Persist();
+    }
+
+    /// <summary>Deletes the selected cheques (one or more) after asking.</summary>
     void DeleteRow()
     {
-        if (Current is not { } r) return;
-        if (MessageBox.Show(this, $"Delete cheque {r.ChequeNo} ({r.Payee}, {AmountInWords.Figures(r.Amount)}) from the register?\nTip: Set status > Void keeps a record instead.",
-                "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
-        _store.Data.Cheques.Remove(r);
+        var rows = Selected;
+        if (rows.Count == 0) return;
+        var what = rows.Count == 1
+            ? $"cheque {rows[0].ChequeNo} ({(rows[0].Payee.Length > 0 ? rows[0].Payee : "blank leaf")}, AED {AmountInWords.Figures(rows[0].Amount)})"
+            : $"these {rows.Count} cheques (AED {AmountInWords.Figures(rows.Sum(r => r.Amount))} in all)";
+        if (MessageBox.Show(this, $"Delete {what} from the register?\n\nThey are removed everywhere: register, analytics and totals. This cannot be undone.\nTip: Set status > Void keeps a record instead.",
+                "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
+        foreach (var r in rows) _store.Data.Cheques.Remove(r);
+        Persist();
+    }
+
+    /// <summary>Removes every Void cheque from the register (all cheque books), after showing how many.</summary>
+    void RemoveAllVoid()
+    {
+        var voids = _store.Data.Cheques.Where(c => c.Status == ChequeStatus.Void).ToList();
+        if (voids.Count == 0)
+        {
+            MessageBox.Show(this, "There are no void cheques in the register.", "Remove void cheques", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        var list = string.Join("\n", voids.OrderBy(c => c.ChequeDate).Take(12).Select(c =>
+            $"   No. {(c.ChequeNo.Length > 0 ? c.ChequeNo : "-")}   {c.ChequeDate:dd-MM-yyyy}   {(c.Payee.Length > 0 ? c.Payee : "blank leaf")}"));
+        if (voids.Count > 12) list += $"\n   ... and {voids.Count - 12} more";
+        if (MessageBox.Show(this,
+                $"Remove all {voids.Count} void cheques from the register?\n\n{list}\n\nThis cannot be undone. Tip: make a backup first (File > Backup data).",
+                "Remove void cheques", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
+        ChequeRecords.RemoveVoid(_store.Data.Cheques);
         Persist();
     }
 

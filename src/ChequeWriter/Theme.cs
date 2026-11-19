@@ -68,7 +68,7 @@ public static class Theme
 
     public static class Glyph
     {
-        public const string Void = "", Undo = "";
+        public const string Void = "", Undo = "", Edit = "";
         public const string Print = "", Preview = "", Page = "", Clear = "",
             Register = "", Analytics = "", Calendar = "", People = "", Help = "";
     }

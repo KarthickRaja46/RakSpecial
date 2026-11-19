@@ -3,6 +3,13 @@
 Each section below becomes the release notes on GitHub and in the app's 'Update available' window.
 Write for the people who use the app: short, plain lines, one change per line.
 
+## 2.1.9
+- Edit a cheque that is already in the register: fix the amount, payee, date, number, crossing, status or notes. The amount in words updates too.
+- 'Edit' on the Last cheque printed card, and 'Edit cheque...' in the register.
+- Delete a cheque completely (from the Edit window or the register). You can delete several at once in the register.
+- 'Undo void' in the register (and in Set status) turns void cheques back to Printed.
+- 'Remove all void cheques...' in the register clears every void entry at once, after showing which ones.
+
 ## 2.1.8
 - Analytics is redesigned: a clear Overview with money paid by month, top payees, a category chart and where your cheques stand.
 - New 'Good to know' panel: how this period compares with the one before, the biggest cheque, the busiest month, regular payments, cheques not yet cleared and post-dated cheques falling due.

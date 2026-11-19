@@ -21,7 +21,7 @@
     <AssemblyName>RAKSpecial</AssemblyName>
     <Product>RAK Special</Product>
     <AssemblyTitle>RAK Special - RAK Bank cheque printing</AssemblyTitle>
-    <Version>2.1.8</Version>
+    <Version>2.1.9</Version>
     <Company>Karthick Raja</Company>
     <Copyright>Copyright (c) 2026 Karthick Raja</Copyright>
     <Description>RAK Special: prints RAK Bank Business (RAK-001) and RAK Old (RAK-002) cheques with amount in words, fils, PDC series, register and payee list.</Description>
