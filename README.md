@@ -6,8 +6,9 @@
 
 # RAK Special: RAK Bank Cheque Printing Software for Windows
 
-**Free cheque printing software for UAE businesses. Print RAKBANK cheques on any office printer,**<br>
-**with the amount in words in AED and fils, post-dated cheque series, a cheque register and live analytics.**
+**Free, open-source cheque printing software for UAE businesses. Print RAKBANK cheques on any office printer,**<br>
+**with the amount in words in AED and fils, post-dated cheque series, a cheque register and live analytics.**<br>
+**No account, no sign-in, no cloud: everything stays on your own computer.**
 
 <sub>برنامج مجاني لطباعة شيكات بنك رأس الخيمة الوطني (RAKBANK) على ويندوز · كتابة المبلغ بالكلمات بالدرهم والفلس · طباعة الشيكات المؤجلة</sub>
 
@@ -25,8 +26,10 @@
 [![Build](https://img.shields.io/github/actions/workflow/status/KarthickRaja46/RakSpecial/build.yml?style=for-the-badge&label=build&labelColor=0b0d12)](https://github.com/KarthickRaja46/RakSpecial/actions/workflows/build.yml)
 ![Windows 10 | 11](https://img.shields.io/badge/windows-10%20%7C%2011-d4af6a?style=for-the-badge&labelColor=0b0d12)
 ![Free and offline](https://img.shields.io/badge/price-free%20%C2%B7%20offline-d4af6a?style=for-the-badge&labelColor=0b0d12)
+[![MIT License](https://img.shields.io/badge/license-MIT-d4af6a?style=for-the-badge&labelColor=0b0d12)](LICENSE)
+![No account needed](https://img.shields.io/badge/account-not%20needed-d4af6a?style=for-the-badge&labelColor=0b0d12)
 
-**[Features](#-features)** &nbsp;✦&nbsp; **[Screenshots](#-screenshots)** &nbsp;✦&nbsp; **[Install](#-installation)** &nbsp;✦&nbsp; **[Quick start](#-quick-start)** &nbsp;✦&nbsp; **[FAQ](#-frequently-asked-questions)** &nbsp;✦&nbsp; **[Support](#-support)**
+**[Features](#-features)** &nbsp;✦&nbsp; **[Screenshots](#-screenshots)** &nbsp;✦&nbsp; **[Install](#-installation)** &nbsp;✦&nbsp; **[Quick start](#-quick-start)** &nbsp;✦&nbsp; **[Privacy](#-open-source-no-account-your-data-stays-with-you)** &nbsp;✦&nbsp; **[FAQ](#-frequently-asked-questions)** &nbsp;✦&nbsp; **[Support](#-support)** &nbsp;✦&nbsp; **[License](#-license)**
 
 <img src="docs/readme/divider.svg" width="100%" alt="">
 
@@ -73,13 +76,13 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
   <tr>
     <td width="33%" valign="top">
       <h3>📊 Live analytics</h3>
-      Total paid by month, payee and category (Rent, Supplier, Salary...), cheques awaiting clearing, bounced cheques,
-      and the post-dated cheques coming up, with charts. Every table exports to Excel.
+      An overview dashboard: money paid by month, top payees, categories (Rent, Supplier, Salary...) and where your
+      cheques stand, plus a <i>Good to know</i> panel in plain words. Every table exports to Excel.
     </td>
     <td width="33%" valign="top">
       <h3>🗂️ Register &amp; status</h3>
-      Every printed cheque is recorded. Mark cheques <b>Cleared</b>, <b>Bounced</b>, <b>Stopped</b> or <b>Void</b>, several at once,
-      straight from your bank statement.
+      Every printed cheque is recorded. Mark cheques <b>Cleared</b>, <b>Bounced</b>, <b>Stopped</b> or <b>Void</b>, fix a wrong amount
+      or payee, undo a void, or delete a cheque.
     </td>
     <td width="33%" valign="top">
       <h3>🎯 Layout editor</h3>
@@ -90,8 +93,8 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
   <tr>
     <td width="33%" valign="top">
       <h3>🔒 Private &amp; offline</h3>
-      Your cheques, payees and amounts never leave your PC. Automatic <code>.bak</code> copy on every save, plus one-click
-      backup and restore.
+      No account and no sign-in. Your cheques, payees and amounts never leave your PC. Automatic <code>.bak</code> copy
+      on every save, plus one-click backup and restore.
     </td>
     <td width="33%" valign="top">
       <h3>🚀 Easy setup</h3>
@@ -99,9 +102,9 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
       and no .NET to install.
     </td>
     <td width="33%" valign="top">
-      <h3>💬 Built-in support</h3>
-      Email or WhatsApp us from <i>Help</i> (F1), with your version and settings already filled in. New versions install
-      with one click.
+      <h3>🔓 Open source (MIT)</h3>
+      Free to use, copy, change and share, for business too. The full source code is in this repository, so anyone can
+      check exactly what it does. New versions install with one click.
     </td>
   </tr>
 </table>
@@ -115,6 +118,9 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
 - **A/C Payee crossing** and **"or Bearer" strike-through**, each on or off per cheque.
 - **Live preview** while you type, and **plain-paper test prints** to check alignment before using a real leaf.
 - **Confirm before every print** (date, payee, amount and words) and a **duplicate cheque number** warning.
+- **Last cheque printed** card under the preview, with **Void** (and **Undo void**) and **Edit** in one click.
+  Voided by mistake in the printer? RAK Special offers to print the same cheque again on the next leaf.
+- **Void cheque** for any cheque number, including a spoilt blank leaf.
 
 ### Post-dated cheques (PDC)
 - Enter the payee, amount, first cheque number and first date once, then print the whole series.
@@ -123,16 +129,25 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
 ### Cheque register and status
 - Search, date filter, notes, reprint, and **export to Excel (CSV)**.
 - Status **Printed, Cleared, Bounced, Stopped or Void**; a reason is saved for bounced and stopped cheques.
+- **Edit a cheque** already in the register: fix the number, date, payee, amount (the words update too), crossing,
+  status or notes. Only the register changes; the paper cheque is not touched.
+- **Delete** one or several cheques, **Undo void**, and **Remove all void cheques** in one go.
 
 ### Analytics
-- **Summary cards**: total paid, average and largest cheque, top payee, awaiting clearing, bounced or stopped, due in the next 30 days.
+- **Summary cards**: total paid (with the change from the period before), average and largest cheque, top payee,
+  awaiting clearing, bounced or stopped, due in the next 30 days. Click a card to see its details.
+- **Overview**: money paid by month with the monthly average, top payees, a category chart and where your cheques
+  stand (cleared, awaiting clearing, post-dated, bounced, stopped, void).
+- **Good to know**: plain-language findings, e.g. "You paid 12% more than the period before", the biggest cheque,
+  the busiest month, regular payments, cheques not yet marked Cleared and post-dated cheques falling due.
+- Hover any chart for the exact amount; click a month, payee or status to jump to its details.
 - **By month**: chart and table with the change from the previous month; post-dated months shown lighter.
 - **By payee**: cheques, total, share, average, largest and bounces, with a monthly chart per payee.
 - **By category**: totals per payee category (Rent, Supplier, Salary, Utility, Government, Loan, or your own), with a chart.
-- **Upcoming post-dated cheques**: due in the next 30, 90 or 365 days.
+- **Post-dated cheques**: due in the next 30, 90 or 365 days, with how much falls due each month.
 - **Cheques**: every cheque in the period; **remove** test prints or mistakes from analytics (they stay in the register)
   and put them back at any time.
-- Filter by period, cheque book and category. Every table exports to Excel.
+- Filter by period, cheque book and category with one click. Every table exports to Excel.
 
 ### Everyday use
 - Modern workspace: form on the left, live preview on the right, this month's figures always in view.
@@ -149,14 +164,14 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
 
 <p align="center">
   <img src="docs/screenshots/main-window.png" width="92%" alt="RAK Special main window: New cheque form, amount in words in AED, live preview on the RAK Bank Business cheque picture and monthly totals">
-  <br><sub><b>Main window</b>: the cheque form, live preview on the real cheque picture, and this month's figures</sub>
+  <br><sub><b>Main window</b>: the cheque form, live preview on the real cheque picture, the last cheque printed (with Void and Edit) and this month's figures</sub>
 </p>
 
 <table>
   <tr>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/analytics-by-month.png" alt="Cheque analytics by month: total paid, monthly chart and month-on-month change in AED">
-      <p align="center"><b>Analytics by month</b><br><sub>Total paid, awaiting clearing, bounced cheques and a monthly chart</sub></p>
+      <img src="docs/screenshots/analytics-overview.png" alt="Cheque analytics overview: total paid by month, top payees, category chart, cheque status and Good to know findings">
+      <p align="center"><b>Analytics overview</b><br><sub>Paid by month, top payees, categories, cheque status and <i>Good to know</i></sub></p>
     </td>
     <td width="50%" valign="top">
       <img src="docs/screenshots/analytics-by-payee.png" alt="Cheque analytics by payee: totals, share and monthly payments per payee">
@@ -166,7 +181,7 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
   <tr>
     <td width="50%" valign="top">
       <img src="docs/screenshots/analytics-upcoming.png" alt="Upcoming post-dated cheques (PDC) due in the next 30 days with totals">
-      <p align="center"><b>Upcoming post-dated cheques</b><br><sub>Know how much must be in the account, and by when</sub></p>
+      <p align="center"><b>Post-dated cheques</b><br><sub>How much must be in the account, and by when</sub></p>
     </td>
     <td width="50%" valign="top">
       <img src="docs/screenshots/help-and-support.png" alt="RAK Special help and support window with email and WhatsApp support">
@@ -175,7 +190,7 @@ way**: correctly spelled, aligned to the real RAK Bank leaf, and recorded in a r
   </tr>
 </table>
 
-<sub>Screenshots use sample data.</sub>
+<sub>Screenshots use made-up sample data.</sub>
 
 <img src="docs/readme/divider.svg" width="100%" alt="">
 
@@ -237,8 +252,9 @@ Other banks can be set up with the layout editor; built-in layouts are on the [r
 2. **Test on plain paper**: click **Test print** and hold the sheet against a real cheque in front of a light.
    - Everything shifted the same way → *Tools → Layout editor → Cheque & printer settings → Offset X / Offset Y*.
    - Only one field is off → drag that field in the layout editor.
-3. **Print**: fill in the cheque number, date, payee and amount. Put the cheque in the top-left corner of an
-   A4 landscape page against the paper guide, and press **Print cheque** (Ctrl+P).
+3. **Print**: fill in the cheque number, date, payee and amount, and press **Print cheque** (Ctrl+P). Put the cheque
+   in the printer tray **standing up, narrow side first, centred** between the paper guides. The Print window shows
+   a picture of exactly how.
 4. **Keep the register up to date**: in **Register**, mark cheques **Cleared** as they appear on your bank statement.
    Analytics then shows what is still awaiting clearing.
 
@@ -248,14 +264,35 @@ Other banks can be set up with the layout editor; built-in layouts are on the [r
 | <kbd>Ctrl</kbd> + <kbd>T</kbd> | Analytics |
 | <kbd>F1</kbd> | Help & support |
 
-## 🔒 Your data, privacy and backups
+## 🔒 Open source, no account, your data stays with you
 
-- All data stays **on your computer** in one file: `%APPDATA%\RAK Special\rakspecial-data.json`
-  (layouts, payees, cheque register and settings). The portable version keeps it in a `Data` folder beside the program.
-- Every save keeps the previous version as a `.bak` file. Use **File → Backup data** regularly, and
-  **File → Restore data from backup** to move to a new PC.
-- RAK Special never sends your cheques, payees or amounts anywhere. The only network request is the update check,
-  which reads the latest version number from GitHub. Turn it off in *Tools → Settings → Check for updates*.
+RAK Special is free, open-source software. Anyone can download it, install it and use it. There is **no account to
+create, no sign-in, no subscription, no server and no cloud**. It works like a calculator on your desk: everything
+happens on your own computer.
+
+**Where your data lives.** Everything is kept in one file on your PC:
+`%APPDATA%\RAK Special\rakspecial-data.json` (cheque books, payees, cheque register and settings). The portable
+version keeps it in a `Data` folder beside the program instead. Nobody else, including the author, can see it.
+
+**What RAK Special never does.**
+- It never uploads your cheques, payees, amounts, bank details or files.
+- It has no tracking, telemetry, advertising or usage statistics.
+- It does not need an internet connection to work.
+
+**The only times it goes online:**
+
+| When | What happens | What is sent |
+|---|---|---|
+| Update check, when the program starts | Asks GitHub for the number of the latest release | Nothing about you: only a normal web request naming the program and its version (`RAKSpecial/2.1.9`) |
+| You click **Update now** | Downloads the new setup from this repository's GitHub releases | Nothing about you |
+| You click **Email** or **WhatsApp** in *Help* | Opens your own email or WhatsApp with a message you can read, change or delete before sending | Only what you choose to send |
+
+Turn the update check off in *Tools → Settings → Check for updates*, and RAK Special never connects to the internet
+at all. Because the code is open, you can check all of this yourself: the update check is in
+[`src/ChequeWriter/Updates.cs`](src/ChequeWriter/Updates.cs).
+
+**Backups.** Every save keeps the previous version as a `.bak` file. Use **File → Backup data** regularly, and
+**File → Restore data from backup** to move to a new PC. Uninstalling keeps your data.
 
 <img src="docs/readme/divider.svg" width="100%" alt="">
 
@@ -301,7 +338,22 @@ it prints the date, payee, amount in figures and the amount in words in the righ
 <details>
 <summary><b>Is RAK Special free?</b></summary>
 
-Yes. There is no subscription, licence fee or account to create.
+Yes, completely. It is open source under the [MIT License](LICENSE): no subscription, no licence fee, no trial and
+no account to create. Businesses can use it too.
+</details>
+
+<details>
+<summary><b>Do I need to create an account or sign in?</b></summary>
+
+No. Download it, install it and start printing. There is no login, no registration and no email address needed.
+</details>
+
+<details>
+<summary><b>Is it open source? Can I change it?</b></summary>
+
+Yes. The full source code is in this repository under the MIT License. You can read it, change it, build it yourself
+and share it. Please keep the copyright notice and the licence with any copy. Improvements are welcome as pull
+requests (see [Contributing](#-contributing)).
 </details>
 
 <details>
@@ -334,7 +386,8 @@ printer offset to line it up once.
 <summary><b>Does it need the internet? Is my data safe?</b></summary>
 
 No internet is needed. Your cheques, payees and amounts stay on your PC and are never uploaded. Only the optional update
-check contacts GitHub, and it fetches nothing but the latest version number.
+check contacts GitHub, and it fetches nothing but the latest version number. See
+[Open source, no account, your data stays with you](#-open-source-no-account-your-data-stays-with-you).
 </details>
 
 <details>
@@ -411,6 +464,7 @@ makes GitHub Actions run the tests, build the setup and the portable ZIP, and pu
 | `tests/ChequeWriter.Tests` | xUnit tests |
 | `tools/make_images.py` | Rebuilds `docs/icon.png` and the setup pictures from `src/ChequeWriter/app.ico` |
 | `tools/make_readme_art.py` | Rebuilds the animated README artwork in `docs/readme/` |
+| `LICENSE` | The MIT License (also installed as `LICENSE.txt` beside the program) |
 
 Project links and support contacts are set in one place: `src/ChequeWriter/AppInfo.cs`.
 
@@ -423,7 +477,7 @@ and `rak-old.jpg` (clean pictures at exact cheque size, 200 dpi). Users can stil
 
 Bug reports, cheque layouts for other banks and pull requests are welcome. Please read
 [CONTRIBUTING.md](CONTRIBUTING.md) first. RAK Special prints real cheques, so every change needs tests and a
-plain-paper check.
+plain-paper check. Contributions must keep RAK Special free of accounts, tracking and uploads.
 
 ## 🧭 Roadmap
 
@@ -439,9 +493,16 @@ Have an idea? [Open a feature request](https://github.com/KarthickRaja46/RakSpec
 
 <img src="docs/readme/divider.svg" width="100%" alt="">
 
+## 📄 License
+
+RAK Special is released under the **[MIT License](LICENSE)**. You may use, copy, modify, merge, publish, distribute,
+sublicense and sell copies, for personal or business use, as long as the copyright notice and the licence text are
+kept. The software is provided "as is", without warranty of any kind: always check a printed cheque before signing it.
+
 ## 🏷️ About
 
-RAK Special is developed and maintained by **Karthick Raja**. © 2026 Karthick Raja.
+RAK Special is developed and maintained by **Karthick Raja**. © 2026 Karthick Raja. Free and open source under the
+[MIT License](LICENSE).
 
 RAK Special is an independent project. It is **not affiliated with, endorsed by or sponsored by The National Bank
 of Ras Al Khaimah (RAKBANK)**. RAKBANK and RAK Bank are names of their respective owner and are used only to describe
@@ -460,7 +521,7 @@ which cheques this software prints. Always check a printed cheque before signing
 RAK Bank cheque printing software · RAKBANK cheque printer · RAK Bank cheque writer · cheque printing software UAE ·
 cheque printing software Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah · cheque writer for Windows ·
 amount in words AED with fils · dirham amount in words · PDC printing · post-dated cheque printing · rent cheque printing ·
-cheque register software · free cheque printing software · business cheque printing UAE
+cheque register software · free cheque printing software · open source cheque printing software · business cheque printing UAE
 
 برنامج طباعة الشيكات · طباعة شيكات بنك رأس الخيمة · برنامج كتابة الشيكات الإمارات · طباعة الشيكات المؤجلة ·
 كتابة المبلغ بالكلمات بالدرهم

@@ -1,7 +1,13 @@
 # Contributing to RAK Special
 
+RAK Special is open source under the [MIT License](LICENSE). By sending a pull request you agree that your
+contribution is released under the same licence.
+
 Thank you for helping. RAK Special is used to print real cheques, so mistakes cost people money. Please keep
 changes small, tested and easy to check.
+
+**Privacy rule:** RAK Special has no account, no server and no tracking, and it must stay that way. Do not add
+sign-in, telemetry, analytics, crash uploads or anything else that sends a user's data off their computer.
 
 ## Reporting a problem
 

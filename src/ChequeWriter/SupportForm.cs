@@ -82,7 +82,9 @@ public class SupportForm : Form
         {
             AutoSize = true, MaximumSize = new Size(560, 0), ForeColor = Color.DimGray, Margin = new Padding(3, 10, 3, 3),
             Font = new Font("Segoe UI", 8.5f),
-            Text = $"© 2026 {AppInfo.Author}. {AppInfo.Name} is an independent project and is not affiliated with or endorsed by " +
+            Text = $"© 2026 {AppInfo.Author}. Free and open source under the MIT License. No account or sign-in: " +
+                   "your cheques, payees and amounts stay on this computer and are never sent anywhere.\n" +
+                   $"{AppInfo.Name} is an independent project and is not affiliated with or endorsed by " +
                    "The National Bank of Ras Al Khaimah (RAKBANK).",
         };
         body.Controls.Add(footer);

@@ -18,16 +18,19 @@ RAK Special is installed. Before your first real cheque, do these steps once:
      Tools > Layout editor, then drag that field.
 
 4. PRINT
-   Put the cheque in the top-left corner of an A4 landscape page,
-   against the paper guide, and press Print cheque (Ctrl+P).
+   Press Print cheque (Ctrl+P). Put the cheque in the printer tray
+   standing up, narrow side first, centred between the paper guides.
+   The Print window shows a picture of exactly how.
 
 Tips
   - Tools > PDC series prints rent or instalment cheques in one go.
   - File > Backup data now and then.
-  - Tools > Analytics shows totals by month and payee, and the
-    post-dated cheques still to come.
-  - Your data is kept in %APPDATA%\RAK Special. Uninstalling or
-    updating RAK Special does not delete it.
+  - Analytics (Ctrl+T) shows where the money went, by month, payee
+    and category, and the post-dated cheques still to come.
+  - Made a mistake? The "Last cheque printed" card has Void and Edit.
+  - Your data is kept only on this computer, in %APPDATA%\RAK Special.
+    No account, no cloud. Uninstalling or updating does not delete it.
+  - RAK Special is free and open source (MIT License).
 
 Need help?  Help > Help & support (F1) in the program, or:
   Email      karthickraja232205@gmail.com

@@ -19,6 +19,7 @@ if exist "%PORT%" rd /s /q "%PORT%"
 mkdir "%PORT%"
 copy /y publish\RAKSpecial.exe "%PORT%\" >nul || exit /b 1
 copy /y "installer\READ ME FIRST.txt" "%PORT%\" >nul || exit /b 1
+copy /y LICENSE "%PORT%\LICENSE.txt" >nul || exit /b 1
 type nul > "%PORT%\portable.txt"
 powershell -NoProfile -Command "Compress-Archive -Path '%PORT%\*' -DestinationPath 'Share\RAKSpecial-Portable-%VER%.zip' -Force" || exit /b 1
 rd /s /q "%PORT%"

@@ -11,13 +11,15 @@ FILES
                         RAKSpecial.exe (good for a USB stick).
                         Delete it to keep data in %APPDATA%\RAK Special.
   READ ME FIRST.txt   - this file
+  LICENSE.txt         - the MIT License (free and open source)
 
 If Windows shows "Windows protected your PC", click
 "More info" -> "Run anyway".
 
 WHAT IT DOES
-  - Prints RAK Bank cheques on an ordinary printer (A4 landscape,
-    cheque placed in the top-left corner against the paper guide).
+  - Prints RAK Bank cheques on an ordinary printer. Put the cheque in
+    the tray standing up, narrow side first, centred between the
+    paper guides. The Print window shows a picture of how.
   - Two RAK cheque books - pick the one in your hand:
       RAK Business  (RAK-001)  new business cheque, 202 x 99 mm
       RAK Old       (RAK-002)  older, wider book,    206 x 100 mm
@@ -38,6 +40,13 @@ BEFORE THE FIRST REAL CHEQUE
      [ Cheque & printer settings ] > Offset X / Offset Y (mm).
      If one field is off, drag it in the layout editor.
   4. Use File > Backup data now and then.
+
+FREE, OPEN SOURCE, PRIVATE
+  RAK Special is free and open source (MIT License, see LICENSE.txt).
+  No account, no sign-in. Your cheques, payees and amounts stay on
+  this computer and are never sent anywhere. The only internet use
+  is the update check (it asks GitHub for the latest version number);
+  turn it off in Tools > Settings.
 
 SUPPORT
   In the program: Help > Help & support (F1)
